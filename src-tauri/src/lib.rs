@@ -7,8 +7,15 @@ use tauri::tray::TrayIconBuilder;
 use tauri::{Emitter, Manager, WebviewWindow};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
+#[cfg(target_os = "windows")]
 use windows::Win32::Foundation::POINT;
+#[cfg(target_os = "windows")]
 use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
+
+#[cfg(target_os = "macos")]
+use core_graphics::event::CGEvent;
+#[cfg(target_os = "macos")]
+use core_graphics::event_source::{CGEventSource, CGEventSourceStateID};
 
 const HIT_RADIUS_ENTER: f64 = 42.0;
 const HIT_RADIUS_EXIT: f64 = 58.0;
@@ -42,6 +49,7 @@ fn get_stage_size(window: WebviewWindow) -> (f64, f64) {
     (1280.0, 800.0)
 }
 
+#[cfg(target_os = "windows")]
 fn get_cursor_pos_physical() -> Option<(f64, f64)> {
     unsafe {
         let mut point = POINT::default();
@@ -51,6 +59,19 @@ fn get_cursor_pos_physical() -> Option<(f64, f64)> {
             None
         }
     }
+}
+
+#[cfg(target_os = "macos")]
+fn get_cursor_pos_physical() -> Option<(f64, f64)> {
+    let source = CGEventSource::new(CGEventSourceStateID::CombinedSessionState).ok()?;
+    let event = CGEvent::new(source).ok()?;
+    let point = event.location();
+    Some((point.x, point.y))
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
+fn get_cursor_pos_physical() -> Option<(f64, f64)> {
+    None
 }
 
 fn cover_primary_monitor(window: &WebviewWindow) {
