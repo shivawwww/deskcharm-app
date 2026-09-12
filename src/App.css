@@ -39,6 +39,7 @@ body,
   cursor: pointer;
   touch-action: none;
   transform-style: preserve-3d;
+  z-index: 4;
 }
 
 .charm-inner {
@@ -221,9 +222,20 @@ body,
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
+.menu-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(15, 12, 8, 0.22);
+  cursor: default;
+}
+
 .menu {
   position: absolute;
+  z-index: 6;
   width: 290px;
+  display: flex;
+  flex-direction: column;
   background: var(--ink);
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -232,6 +244,8 @@ body,
   font-family: var(--mono);
   color: var(--parchment);
   animation: menu-in 0.16s ease-out;
+  overflow: hidden;
+  pointer-events: auto;
 }
 
 .menu-arrow {
@@ -265,17 +279,52 @@ body,
   color: var(--parchment-dim);
 }
 
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.menu-header .menu-label {
+  margin: 0;
+}
+
+.menu-close {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--parchment);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.menu-close:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
 .roster {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: min(58vh, 460px);
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   margin: 0 -4px;
   padding: 2px 4px 2px 2px;
   scrollbar-width: thin;
   scrollbar-color: rgba(210, 162, 76, 0.4) transparent;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  pointer-events: auto;
 }
 
 .roster::-webkit-scrollbar {
@@ -399,6 +448,11 @@ body,
   height: 1px;
   background: var(--line);
   margin: 14px 0 12px;
+  flex-shrink: 0;
+}
+
+.menu-footer {
+  flex-shrink: 0;
 }
 
 .menu-custom {

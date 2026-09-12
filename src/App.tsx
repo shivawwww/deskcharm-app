@@ -28,6 +28,7 @@ export default function App() {
   const [anchorX, setAnchorX] = useState(400);
   const [charm, setCharm] = useState<Charm>(loadCharm);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState({ x: 400, y: 120 });
   const [customEmoji, setCustomEmoji] = useState("");
   const [activeRitual, setActiveRitual] = useState<RitualType | null>(null);
   const [charmPos, setCharmPos] = useState({ x: 400, y: ANCHOR_Y + CHARM_INDEX * 16 });
@@ -42,6 +43,8 @@ export default function App() {
   const downRef = useRef<{ x: number; y: number } | null>(null);
   const timeRef = useRef(0);
   const frameCountRef = useRef(0);
+  const menuOpenRef = useRef(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     invoke<[number, number]>("get_stage_size").then(([w, h]) => {
@@ -74,11 +77,17 @@ export default function App() {
       setTilt(swingTilt);
 
       if (frameCountRef.current % 2 === 0) {
+        const rects: [number, number, number, number][] = [];
+        if (menuOpenRef.current && menuRef.current) {
+          const r = menuRef.current.getBoundingClientRect();
+          rects.push([r.x, r.y, r.width, r.height]);
+        }
         invoke("update_hit_points", {
           points: [
             [tip.x, tip.y],
             [anchorXRef.current, ANCHOR_Y],
           ],
+          rects,
         }).catch(() => {});
       }
       raf = requestAnimationFrame(tick);
@@ -103,14 +112,38 @@ export default function App() {
     invoke("set_force_interactive", { active }).catch(() => {});
   };
 
+  const closeMenu = () => {
+    menuOpenRef.current = false;
+    setMenuOpen(false);
+    setForceInteractive(false);
+  };
+
+  useEffect(() => {
+    menuOpenRef.current = menuOpen;
+    if (menuOpen) setForceInteractive(true);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMenu();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   const onCharmPointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
+    if (e.button !== 0) return;
     (e.target as Element).setPointerCapture(e.pointerId);
     dragIndexRef.current = CHARM_INDEX;
     dragPosRef.current = { x: e.clientX, y: e.clientY };
     downRef.current = { x: e.clientX, y: e.clientY };
+    if (menuOpenRef.current) {
+      menuOpenRef.current = false;
+      setMenuOpen(false);
+    }
     setForceInteractive(true);
-    setMenuOpen(false);
   };
 
   const onCharmPointerMove = (e: React.PointerEvent) => {
@@ -136,9 +169,10 @@ export default function App() {
   };
 
   const onCharmPointerUp = (e: React.PointerEvent) => {
+    if (e.button !== 0) return;
     dragIndexRef.current = null;
     dragPosRef.current = null;
-    setForceInteractive(false);
+    if (!menuOpenRef.current) setForceInteractive(false);
     const down = downRef.current;
     if (down) {
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
@@ -151,9 +185,16 @@ export default function App() {
 
   const onCharmContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    setMenuOpen((v) => {
-      const next = !v;
-      setForceInteractive(next);
+    e.stopPropagation();
+    setMenuOpen((open) => {
+      const next = !open;
+      menuOpenRef.current = next;
+      if (next) {
+        setMenuPos({ x: charmPos.x, y: charmPos.y });
+        setForceInteractive(true);
+      } else {
+        setForceInteractive(false);
+      }
       return next;
     });
   };
@@ -174,13 +215,12 @@ export default function App() {
 
   const onAnchorPointerUp = () => {
     anchorDraggingRef.current = false;
-    setForceInteractive(false);
+    if (!menuOpenRef.current) setForceInteractive(false);
   };
 
   const chooseCharm = (c: Charm) => {
     setCharm(c);
-    setMenuOpen(false);
-    setForceInteractive(false);
+    closeMenu();
   };
 
   const applyCustomEmoji = () => {
@@ -196,13 +236,7 @@ export default function App() {
       actionLabel: "Give it a shake",
     });
     setCustomEmoji("");
-    setMenuOpen(false);
-    setForceInteractive(false);
-  };
-
-  const closeMenu = () => {
-    setMenuOpen(false);
-    setForceInteractive(false);
+    closeMenu();
   };
 
   if (!stage) return null;
@@ -264,22 +298,34 @@ export default function App() {
         </span>
       </div>
 
+      {menuOpen && <div className="menu-backdrop" onPointerDown={closeMenu} />}
+
       {menuOpen && (
         <div
+          ref={menuRef}
           className="menu"
           style={{
-            left: Math.min(Math.max(charmPos.x - 145, 12), stage.width - 302),
-            top: charmPos.y + 34,
+            left: Math.min(Math.max(menuPos.x - 145, 12), stage.width - 302),
+            top: Math.min(menuPos.y + 34, Math.max(12, stage.height - 280)),
+            maxHeight: Math.max(240, stage.height - Math.min(menuPos.y + 34, Math.max(12, stage.height - 280)) - 16),
           }}
           onPointerDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
         >
-          <div className="menu-arrow" style={{ left: Math.min(133, charmPos.x - Math.max(charmPos.x - 145, 12) - 8) }} />
-          <p className="menu-label">choose a charm</p>
+          <div className="menu-arrow" style={{ left: Math.min(133, menuPos.x - Math.max(menuPos.x - 145, 12) - 8) }} />
+          <div className="menu-header">
+            <p className="menu-label">choose a charm</p>
+            <button type="button" className="menu-close" onClick={closeMenu} aria-label="Close">
+              Close
+            </button>
+          </div>
           <div className="roster">
             {DEFAULT_CHARMS.map((c) => (
               <button
+                type="button"
                 key={c.id}
                 className={`roster-card ${c.id === charm.id ? "active" : ""}`}
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => chooseCharm(c)}
               >
                 <span className="roster-glyph">
@@ -296,19 +342,21 @@ export default function App() {
               </button>
             ))}
           </div>
-          <div className="menu-divider" />
-          <p className="menu-label">or type your own</p>
-          <div className="menu-custom">
-            <input
-              value={customEmoji}
-              placeholder="😀"
-              maxLength={4}
-              onChange={(e) => setCustomEmoji(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && applyCustomEmoji()}
-            />
-            <button className="menu-set" onClick={applyCustomEmoji}>
-              Set
-            </button>
+          <div className="menu-footer">
+            <div className="menu-divider" />
+            <p className="menu-label">or type your own</p>
+            <div className="menu-custom">
+              <input
+                value={customEmoji}
+                placeholder="😀"
+                maxLength={4}
+                onChange={(e) => setCustomEmoji(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && applyCustomEmoji()}
+              />
+              <button type="button" className="menu-set" onClick={applyCustomEmoji}>
+                Set
+              </button>
+            </div>
           </div>
         </div>
       )}
