@@ -1,0 +1,40 @@
+{
+  "_note": "SAMPLE deterministic protocol logic for demonstration. NOT a clinical or operational protocol. Replace with client-approved SOPs (e.g. MPDS / local cards) and sign off through the safety board before any live use.",
+  "generic": [
+    {"id": "what",     "slot": "incident",   "q": {"en": "Tell me exactly what happened.", "ar": "قل لي بالضبط ماذا حدث؟"}},
+    {"id": "where",    "slot": "location",   "q": {"en": "What is the address of the emergency?", "ar": "ما هو عنوان الحادث؟"}},
+    {"id": "callback", "slot": "callback",   "q": {"en": "What is your phone number in case we are disconnected?", "ar": "ما رقم هاتفك في حال انقطع الاتصال؟"}}
+  ],
+  "types": {
+    "MEDICAL": [
+      {"id": "age",      "slot": "age",                "q": {"en": "How old is the patient?", "ar": "كم عمر المريض؟"}},
+      {"id": "conscious","slot": "conscious_breathing","q": {"en": "Is the patient awake and breathing normally?", "ar": "هل المريض واعٍ ويتنفس بشكل طبيعي؟"}},
+      {"id": "problem",  "slot": "injuries",           "q": {"en": "What is the main problem? Any pain or bleeding?", "ar": "ما المشكلة الرئيسية؟ هل هناك ألم أو نزيف؟"}},
+      {"id": "persons",  "slot": "persons",            "q": {"en": "How many people need help?", "ar": "كم عدد الأشخاص الذين يحتاجون مساعدة؟"}}
+    ],
+    "FIRE": [
+      {"id": "inside",   "slot": "people_inside", "q": {"en": "Is anyone inside or trapped?", "ar": "هل يوجد أحد في الداخل أو عالق؟"}},
+      {"id": "persons",  "slot": "persons",       "q": {"en": "How many people are inside?", "ar": "كم عدد الأشخاص في الداخل؟"}},
+      {"id": "spread",   "slot": "fire_status",   "q": {"en": "Is the fire spreading? How big is it?", "ar": "هل الحريق ينتشر؟ ما حجمه؟"}},
+      {"id": "hazard",   "slot": "hazards",       "q": {"en": "Any gas, chemicals or explosives nearby?", "ar": "هل توجد غازات أو مواد كيميائية أو متفجرات قريبة؟"}}
+    ],
+    "TRAFFIC": [
+      {"id": "injuries", "slot": "injuries",      "q": {"en": "Is anyone injured? Anyone trapped in a vehicle?", "ar": "هل يوجد مصابون؟ هل أحد عالق في المركبة؟"}},
+      {"id": "persons",  "slot": "persons",       "q": {"en": "How many people are involved?", "ar": "كم عدد الأشخاص المتأثرين؟"}},
+      {"id": "vehicles", "slot": "vehicles",      "q": {"en": "How many and what type of vehicles?", "ar": "كم عدد المركبات وما نوعها؟"}},
+      {"id": "hazard",   "slot": "hazards",       "q": {"en": "Any fuel leak, smoke or fire?", "ar": "هل هناك تسرب وقود أو دخان أو حريق؟"}}
+    ],
+    "CRIME": [
+      {"id": "weapon",   "slot": "weapon",         "q": {"en": "Does anyone have a weapon?", "ar": "هل يحمل أحد سلاحاً؟"}},
+      {"id": "present",  "slot": "suspect_present","q": {"en": "Is the suspect still there? Which way did they go?", "ar": "هل المشتبه به لا يزال موجوداً؟ وإلى أين ذهب؟"}},
+      {"id": "injuries", "slot": "injuries",       "q": {"en": "Is anyone injured?", "ar": "هل يوجد مصابون؟"}},
+      {"id": "persons",  "slot": "persons",        "q": {"en": "How many people are involved?", "ar": "كم عدد الأشخاص المعنيين؟"}}
+    ]
+  },
+  "instructions": [
+    {"cue": "not_breathing", "text": {"en": "Check the patient is on a firm flat surface and start chest compressions as directed by the approved cardiac-arrest card.", "ar": "تأكد أن المريض على سطح صلب ومستوٍ وابدأ الضغطات الصدرية حسب بطاقة توقف القلب المعتمدة."}},
+    {"cue": "heavy_bleeding", "text": {"en": "Apply firm direct pressure on the wound with a clean cloth and do not remove it.", "ar": "اضغط بقوة مباشرة على الجرح بقطعة قماش نظيفة ولا تزلها."}},
+    {"cue": "fire_spreading", "text": {"en": "Tell everyone to leave now, close doors behind them and not use lifts.", "ar": "اطلب من الجميع المغادرة فوراً وإغلاق الأبواب خلفهم وعدم استخدام المصاعد."}},
+    {"cue": "weapon", "text": {"en": "Advise the caller to move to a safe place, stay quiet and not confront anyone.", "ar": "انصح المتصل بالانتقال إلى مكان آمن والبقاء هادئاً وعدم المواجهة."}}
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "ar_gulf_fire",
+  "title": "Gulf Arabic + English — building fire",
+  "caller_number": "+971500000002",
+  "aml": {
+    "lat": 24.4806,
+    "lon": 54.3602,
+    "accuracy_m": 120
+  },
+  "turns": [
+    {
+      "speaker": "calltaker",
+      "text": "مركز الطوارئ، شنو الموقع؟"
+    },
+    {
+      "speaker": "caller",
+      "text": "الحقونا فيه حريق في building في شارع الشيخ زايد والنار تنتشر بسرعة"
+    },
+    {
+      "speaker": "caller",
+      "text": "الحين في ناس عالقين فوق في الدور الخامس وعيال صغار، والدخان كثير"
+    },
+    {
+      "speaker": "calltaker",
+      "text": "كم شخص عالق؟"
+    },
+    {
+      "speaker": "caller",
+      "text": "يمكن خمسة اشخاص، ما نقدر نطلع"
+    }
+  ],
+  "expected": {
+    "incident_type": "FIRE",
+    "location": "Sheikh Zayed bin Sultan Street",
+    "cues": [
+      "fire_spreading",
+      "trapped",
+      "child"
+    ],
+    "region": "Abu Dhabi Region"
+  }
+}

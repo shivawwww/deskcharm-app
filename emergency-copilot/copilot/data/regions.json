@@ -1,0 +1,32 @@
+{
+ "_note": "DEMO DATA. The three administrative regions of the Emirate of Abu Dhabi; centres are approximate.",
+ "regions": [
+  {
+   "id": "abudhabi",
+   "name": "Abu Dhabi Region",
+   "name_ar": "منطقة أبوظبي",
+   "lat": 24.4539,
+   "lon": 54.3773,
+   "zoom": 11,
+   "code": "ADR"
+  },
+  {
+   "id": "alain",
+   "name": "Al Ain Region",
+   "name_ar": "منطقة العين",
+   "lat": 24.2075,
+   "lon": 55.7447,
+   "zoom": 11,
+   "code": "AAR"
+  },
+  {
+   "id": "dhafra",
+   "name": "Al Dhafra Region",
+   "name_ar": "منطقة الظفرة",
+   "lat": 23.654,
+   "lon": 53.705,
+   "zoom": 8,
+   "code": "ADH"
+  }
+ ]
+}

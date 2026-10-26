@@ -1,0 +1,185 @@
+{
+ "_note": "DEMO DATA. Approximate coordinates; replace with the client's authoritative facility register.",
+ "facilities": [
+  {
+   "id": "skmc_h",
+   "kind": "hospital",
+   "name": "Sheikh Khalifa Medical City",
+   "name_ar": "مدينة الشيخ خليفة الطبية",
+   "lat": 24.464,
+   "lon": 54.364,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "ccad_h",
+   "kind": "hospital",
+   "name": "Cleveland Clinic Abu Dhabi",
+   "name_ar": "كليفلاند كلينك أبوظبي",
+   "lat": 24.5018,
+   "lon": 54.388,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "mafraq_h",
+   "kind": "hospital",
+   "name": "Mafraq Hospital",
+   "name_ar": "مستشفى المفرق",
+   "lat": 24.305,
+   "lon": 54.51,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "corn_h",
+   "kind": "hospital",
+   "name": "Corniche Hospital",
+   "name_ar": "مستشفى الكورنيش",
+   "lat": 24.483,
+   "lon": 54.351,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "tawam_h",
+   "kind": "hospital",
+   "name": "Tawam Hospital",
+   "name_ar": "مستشفى توام",
+   "lat": 24.259,
+   "lon": 55.702,
+   "region": "Al Ain Region"
+  },
+  {
+   "id": "alain_h",
+   "kind": "hospital",
+   "name": "Al Ain Hospital",
+   "name_ar": "مستشفى العين",
+   "lat": 24.22,
+   "lon": 55.747,
+   "region": "Al Ain Region"
+  },
+  {
+   "id": "dhafra_h",
+   "kind": "hospital",
+   "name": "Madinat Zayed Hospital",
+   "name_ar": "مستشفى مدينة زايد",
+   "lat": 23.66,
+   "lon": 53.7,
+   "region": "Al Dhafra Region"
+  },
+  {
+   "id": "ruwais_h",
+   "kind": "hospital",
+   "name": "Ruwais Hospital",
+   "name_ar": "مستشفى الرويس",
+   "lat": 24.106,
+   "lon": 52.73,
+   "region": "Al Dhafra Region"
+  },
+  {
+   "id": "liwa_h",
+   "kind": "hospital",
+   "name": "Liwa Hospital",
+   "name_ar": "مستشفى ليوا",
+   "lat": 23.131,
+   "lon": 53.787,
+   "region": "Al Dhafra Region"
+  },
+  {
+   "id": "adp_hq",
+   "kind": "police",
+   "name": "Abu Dhabi Police HQ",
+   "name_ar": "القيادة العامة لشرطة أبوظبي",
+   "lat": 24.473,
+   "lon": 54.366,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "muss_p",
+   "kind": "police",
+   "name": "Mussafah Police Station",
+   "name_ar": "مركز شرطة مصفح",
+   "lat": 24.35,
+   "lon": 54.49,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "yas_p",
+   "kind": "police",
+   "name": "Yas Island Police Station",
+   "name_ar": "مركز شرطة جزيرة ياس",
+   "lat": 24.48,
+   "lon": 54.6,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "alain_p",
+   "kind": "police",
+   "name": "Al Ain Police Station",
+   "name_ar": "مركز شرطة العين",
+   "lat": 24.215,
+   "lon": 55.755,
+   "region": "Al Ain Region"
+  },
+  {
+   "id": "mzayed_p",
+   "kind": "police",
+   "name": "Madinat Zayed Police Station",
+   "name_ar": "مركز شرطة مدينة زايد",
+   "lat": 23.66,
+   "lon": 53.71,
+   "region": "Al Dhafra Region"
+  },
+  {
+   "id": "ruwais_p",
+   "kind": "police",
+   "name": "Ruwais Police Station",
+   "name_ar": "مركز شرطة الرويس",
+   "lat": 24.105,
+   "lon": 52.72,
+   "region": "Al Dhafra Region"
+  },
+  {
+   "id": "ad_cd",
+   "kind": "civil_defence",
+   "name": "Abu Dhabi Civil Defence Centre",
+   "name_ar": "مركز الدفاع المدني أبوظبي",
+   "lat": 24.47,
+   "lon": 54.38,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "muss_cd",
+   "kind": "civil_defence",
+   "name": "Mussafah Civil Defence Centre",
+   "name_ar": "مركز الدفاع المدني مصفح",
+   "lat": 24.34,
+   "lon": 54.51,
+   "region": "Abu Dhabi Region"
+  },
+  {
+   "id": "alain_cd",
+   "kind": "civil_defence",
+   "name": "Al Ain Civil Defence Centre",
+   "name_ar": "مركز الدفاع المدني العين",
+   "lat": 24.225,
+   "lon": 55.74,
+   "region": "Al Ain Region"
+  },
+  {
+   "id": "mzayed_cd",
+   "kind": "civil_defence",
+   "name": "Madinat Zayed Civil Defence Centre",
+   "name_ar": "مركز الدفاع المدني مدينة زايد",
+   "lat": 23.65,
+   "lon": 53.7,
+   "region": "Al Dhafra Region"
+  },
+  {
+   "id": "ruwais_cd",
+   "kind": "civil_defence",
+   "name": "Ruwais Civil Defence Centre",
+   "name_ar": "مركز الدفاع المدني الرويس",
+   "lat": 24.115,
+   "lon": 52.735,
+   "region": "Al Dhafra Region"
+  }
+ ]
+}

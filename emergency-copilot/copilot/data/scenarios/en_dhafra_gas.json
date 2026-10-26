@@ -1,0 +1,38 @@
+{
+  "id": "en_dhafra_gas",
+  "title": "English — gas leak and fire, Ruwais (Al Dhafra)",
+  "caller_number": "+971500000006",
+  "aml": {
+    "lat": 24.1192,
+    "lon": 52.7208,
+    "accuracy_m": 80
+  },
+  "turns": [
+    {
+      "speaker": "calltaker",
+      "text": "Emergency services, what is happening?"
+    },
+    {
+      "speaker": "caller",
+      "text": "There is a gas leak and a fire at the Ruwais industrial area, the fire is spreading"
+    },
+    {
+      "speaker": "calltaker",
+      "text": "Is anyone inside?"
+    },
+    {
+      "speaker": "caller",
+      "text": "Yes, two workers are trapped inside the plant"
+    }
+  ],
+  "expected": {
+    "incident_type": "FIRE",
+    "location": "Ruwais Industrial Area",
+    "region": "Al Dhafra Region",
+    "cues": [
+      "hazard_gas",
+      "fire_spreading",
+      "trapped"
+    ]
+  }
+}

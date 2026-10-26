@@ -1,0 +1,494 @@
+{
+ "_note": "DEMO DATA ONLY. Approximate Abu Dhabi coordinates; replace with the client's authoritative gazetteer (GIS import).",
+ "entries": [
+  {
+   "id": "sbs",
+   "type": "street",
+   "name": "Sheikh Zayed bin Sultan Street",
+   "name_ar": "شارع الشيخ زايد بن سلطان",
+   "lat": 24.4803,
+   "lon": 54.3598,
+   "aliases": [
+    "sheikh zayed bin sultan street",
+    "sheikh zayed street",
+    "shaikh zayed street",
+    "sheikh zayed road",
+    "shaikh zayed road",
+    "sheikh zayed the first street",
+    "شارع الشيخ زايد بن سلطان",
+    "شارع الشيخ زايد",
+    "الشيخ زايد"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "hamdan",
+   "type": "street",
+   "name": "Hamdan Street",
+   "name_ar": "شارع حمدان",
+   "lat": 24.488,
+   "lon": 54.366,
+   "aliases": [
+    "hamdan street",
+    "hamdan st",
+    "sheikh hamdan street",
+    "شارع حمدان",
+    "حمدان"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "airport",
+   "type": "street",
+   "name": "Airport Road",
+   "name_ar": "شارع المطار",
+   "lat": 24.456,
+   "lon": 54.383,
+   "aliases": [
+    "airport road",
+    "airport street",
+    "شارع المطار",
+    "طريق المطار"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "corniche",
+   "type": "street",
+   "name": "Corniche Road",
+   "name_ar": "الكورنيش",
+   "lat": 24.472,
+   "lon": 54.34,
+   "aliases": [
+    "corniche road",
+    "corniche",
+    "cornish",
+    "al corniche",
+    "شارع الكورنيش",
+    "الكورنيش",
+    "كورنيش"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "khalidiya",
+   "type": "district",
+   "name": "Al Khalidiyah",
+   "name_ar": "الخالدية",
+   "lat": 24.472,
+   "lon": 54.347,
+   "aliases": [
+    "al khalidiyah",
+    "khalidiyah",
+    "khalidiya",
+    "al khalidiya",
+    "الخالدية"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "bateen",
+   "type": "district",
+   "name": "Al Bateen",
+   "name_ar": "البطين",
+   "lat": 24.456,
+   "lon": 54.335,
+   "aliases": [
+    "al bateen",
+    "bateen",
+    "al batin",
+    "البطين"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "mushrif",
+   "type": "district",
+   "name": "Al Mushrif",
+   "name_ar": "المشرف",
+   "lat": 24.45,
+   "lon": 54.385,
+   "aliases": [
+    "al mushrif",
+    "mushrif",
+    "المشرف"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "mussafah",
+   "type": "district",
+   "name": "Mussafah",
+   "name_ar": "مصفح",
+   "lat": 24.347,
+   "lon": 54.498,
+   "aliases": [
+    "mussafah",
+    "musaffah",
+    "mussafa",
+    "مصفح",
+    "المصفح"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Mussafah & Mainland"
+  },
+  {
+   "id": "khalifacity",
+   "type": "district",
+   "name": "Khalifa City",
+   "name_ar": "مدينة خليفة",
+   "lat": 24.419,
+   "lon": 54.58,
+   "aliases": [
+    "khalifa city",
+    "madinat khalifa",
+    "مدينة خليفة"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Mussafah & Mainland"
+  },
+  {
+   "id": "reem",
+   "type": "district",
+   "name": "Al Reem Island",
+   "name_ar": "جزيرة الريم",
+   "lat": 24.4985,
+   "lon": 54.4057,
+   "aliases": [
+    "al reem island",
+    "reem island",
+    "الريم",
+    "جزيرة الريم"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Reem & Maryah Islands"
+  },
+  {
+   "id": "maryah",
+   "type": "district",
+   "name": "Al Maryah Island",
+   "name_ar": "جزيرة المارية",
+   "lat": 24.5012,
+   "lon": 54.3892,
+   "aliases": [
+    "al maryah island",
+    "maryah island",
+    "al maryah",
+    "جزيرة المارية",
+    "المارية"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Reem & Maryah Islands"
+  },
+  {
+   "id": "saadiyat",
+   "type": "district",
+   "name": "Saadiyat Island",
+   "name_ar": "جزيرة السعديات",
+   "lat": 24.544,
+   "lon": 54.433,
+   "aliases": [
+    "saadiyat island",
+    "saadiyat",
+    "السعديات",
+    "جزيرة السعديات"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Saadiyat & Yas"
+  },
+  {
+   "id": "yasisl",
+   "type": "district",
+   "name": "Yas Island",
+   "name_ar": "جزيرة ياس",
+   "lat": 24.4672,
+   "lon": 54.6037,
+   "aliases": [
+    "yas island",
+    "yas",
+    "جزيرة ياس",
+    "ياس"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Saadiyat & Yas"
+  },
+  {
+   "id": "mosque",
+   "type": "landmark",
+   "name": "Sheikh Zayed Grand Mosque",
+   "name_ar": "جامع الشيخ زايد الكبير",
+   "lat": 24.4128,
+   "lon": 54.475,
+   "aliases": [
+    "sheikh zayed grand mosque",
+    "grand mosque",
+    "zayed grand mosque",
+    "جامع الشيخ زايد الكبير",
+    "جامع الشيخ زايد",
+    "الجامع الكبير"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Mussafah & Mainland"
+  },
+  {
+   "id": "marina",
+   "type": "landmark",
+   "name": "Marina Mall",
+   "name_ar": "مارينا مول",
+   "lat": 24.476,
+   "lon": 54.32,
+   "aliases": [
+    "marina mall",
+    "مارينا مول"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "yasmall",
+   "type": "landmark",
+   "name": "Yas Mall",
+   "name_ar": "ياس مول",
+   "lat": 24.4885,
+   "lon": 54.607,
+   "aliases": [
+    "yas mall",
+    "ياس مول"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Saadiyat & Yas"
+  },
+  {
+   "id": "wahda",
+   "type": "landmark",
+   "name": "Al Wahda Mall",
+   "name_ar": "الوحدة مول",
+   "lat": 24.472,
+   "lon": 54.372,
+   "aliases": [
+    "al wahda mall",
+    "wahda mall",
+    "الوحدة مول"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "skmc",
+   "type": "landmark",
+   "name": "Sheikh Khalifa Medical City",
+   "name_ar": "مدينة الشيخ خليفة الطبية",
+   "lat": 24.464,
+   "lon": 54.364,
+   "aliases": [
+    "sheikh khalifa medical city",
+    "skmc",
+    "مدينة الشيخ خليفة الطبية"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Abu Dhabi Island"
+  },
+  {
+   "id": "ccad",
+   "type": "landmark",
+   "name": "Cleveland Clinic Abu Dhabi",
+   "name_ar": "كليفلاند كلينك أبوظبي",
+   "lat": 24.5018,
+   "lon": 54.388,
+   "aliases": [
+    "cleveland clinic abu dhabi",
+    "cleveland clinic",
+    "كليفلاند كلينك"
+   ],
+   "region": "Abu Dhabi Region",
+   "area": "Reem & Maryah Islands"
+  },
+  {
+   "id": "alain",
+   "type": "district",
+   "name": "Al Ain City Centre",
+   "name_ar": "وسط مدينة العين",
+   "lat": 24.2075,
+   "lon": 55.7447,
+   "aliases": [
+    "al ain city centre",
+    "al ain city center",
+    "al ain",
+    "downtown al ain",
+    "وسط مدينة العين",
+    "مدينة العين",
+    "العين"
+   ],
+   "region": "Al Ain Region",
+   "area": "Al Ain City"
+  },
+  {
+   "id": "jimi",
+   "type": "district",
+   "name": "Al Jimi",
+   "name_ar": "الجيمي",
+   "lat": 24.23,
+   "lon": 55.76,
+   "aliases": [
+    "al jimi",
+    "jimi",
+    "al jimi mall",
+    "الجيمي"
+   ],
+   "region": "Al Ain Region",
+   "area": "Al Ain City"
+  },
+  {
+   "id": "hafeet",
+   "type": "street",
+   "name": "Jebel Hafeet Road",
+   "name_ar": "طريق جبل حفيت",
+   "lat": 24.06,
+   "lon": 55.77,
+   "aliases": [
+    "jebel hafeet road",
+    "jebel hafeet",
+    "jabal hafit",
+    "jebel hafit road",
+    "طريق جبل حفيت",
+    "جبل حفيت",
+    "شارع جبل حفيت"
+   ],
+   "region": "Al Ain Region",
+   "area": "Jebel Hafeet"
+  },
+  {
+   "id": "aoasis",
+   "type": "landmark",
+   "name": "Al Ain Oasis",
+   "name_ar": "واحة العين",
+   "lat": 24.223,
+   "lon": 55.777,
+   "aliases": [
+    "al ain oasis",
+    "ain oasis",
+    "واحة العين"
+   ],
+   "region": "Al Ain Region",
+   "area": "Al Ain City"
+  },
+  {
+   "id": "azoo",
+   "type": "landmark",
+   "name": "Al Ain Zoo",
+   "name_ar": "حديقة حيوان العين",
+   "lat": 24.179,
+   "lon": 55.736,
+   "aliases": [
+    "al ain zoo",
+    "ain zoo",
+    "حديقة حيوان العين"
+   ],
+   "region": "Al Ain Region",
+   "area": "Al Ain City"
+  },
+  {
+   "id": "mzayed",
+   "type": "district",
+   "name": "Madinat Zayed",
+   "name_ar": "مدينة زايد",
+   "lat": 23.654,
+   "lon": 53.705,
+   "aliases": [
+    "madinat zayed",
+    "medinat zayed",
+    "مدينة زايد"
+   ],
+   "region": "Al Dhafra Region",
+   "area": "Madinat Zayed"
+  },
+  {
+   "id": "ruwais",
+   "type": "district",
+   "name": "Ruwais",
+   "name_ar": "الرويس",
+   "lat": 24.11,
+   "lon": 52.73,
+   "aliases": [
+    "ruwais",
+    "al ruwais",
+    "ar ruwais",
+    "الرويس",
+    "رويس"
+   ],
+   "region": "Al Dhafra Region",
+   "area": "Ruwais"
+  },
+  {
+   "id": "ruwind",
+   "type": "landmark",
+   "name": "Ruwais Industrial Area",
+   "name_ar": "منطقة الرويس الصناعية",
+   "lat": 24.12,
+   "lon": 52.72,
+   "aliases": [
+    "ruwais industrial area",
+    "ruwais industrial",
+    "al ruwais industrial area",
+    "منطقة الرويس الصناعية",
+    "الرويس الصناعية",
+    "المنطقة الصناعية في الرويس"
+   ],
+   "region": "Al Dhafra Region",
+   "area": "Ruwais"
+  },
+  {
+   "id": "liwa",
+   "type": "district",
+   "name": "Liwa Oasis",
+   "name_ar": "واحة ليوا",
+   "lat": 23.13,
+   "lon": 53.79,
+   "aliases": [
+    "liwa oasis",
+    "liwa",
+    "ليوا",
+    "واحة ليوا"
+   ],
+   "region": "Al Dhafra Region",
+   "area": "Liwa"
+  },
+  {
+   "id": "ghayathi",
+   "type": "district",
+   "name": "Ghayathi",
+   "name_ar": "غياثي",
+   "lat": 23.842,
+   "lon": 52.8,
+   "aliases": [
+    "ghayathi",
+    "gayathi",
+    "غياثي"
+   ],
+   "region": "Al Dhafra Region",
+   "area": "Ghayathi"
+  },
+  {
+   "id": "mirfa",
+   "type": "district",
+   "name": "Al Mirfa",
+   "name_ar": "المرفأ",
+   "lat": 24.09,
+   "lon": 53.45,
+   "aliases": [
+    "al mirfa",
+    "mirfa",
+    "المرفأ"
+   ],
+   "region": "Al Dhafra Region",
+   "area": "Al Mirfa"
+  }
+ ]
+}

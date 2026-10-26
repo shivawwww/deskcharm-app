@@ -1,0 +1,257 @@
+{
+ "_note": "Help answers for the in-app support agent fallback, the agent's search_help tool and the static page helper.",
+ "entries": [
+  {
+   "q": "What is the Co-Pilot and what does it never do?",
+   "a": "It listens beside the call-taker, transcribes, flags critical cues, finds the location, suggests the next protocol question and pre-fills the CAD record. It never dispatches, never writes to CAD without a human accepting a field, and never gives medical advice.",
+   "keywords": [
+    "what",
+    "copilot",
+    "never",
+    "dispatch",
+    "purpose",
+    "does"
+   ]
+  },
+  {
+   "q": "How do I accept, edit or reject a suggested field?",
+   "a": "In the call-taker panel each suggested field has three buttons: tick to accept, pencil to edit, cross to reject. Only accepted or edited values are written to CAD. Later AI changes never overwrite what you confirmed; they appear as 'AI now suggests'.",
+   "keywords": [
+    "accept",
+    "edit",
+    "reject",
+    "field",
+    "cad",
+    "button"
+   ]
+  },
+  {
+   "q": "What do the red and amber alerts mean?",
+   "a": "They are critical cues found in the caller's words, for example not breathing, unconscious, weapon, trapped, child, fire spreading, gas hazard. Red is critical and amber is high. They pulse until you acknowledge them. The cue patterns favour catching everything, so a false alert is possible; a missed cue is the worst error.",
+   "keywords": [
+    "alert",
+    "cue",
+    "red",
+    "amber",
+    "critical",
+    "acknowledge",
+    "meaning"
+   ]
+  },
+  {
+   "q": "How is the priority (P1 to P4) calculated?",
+   "a": "By deterministic rules, not by AI: a base score for the incident type plus points for each cue and for three or more people involved. The panel lists every reason with its points. P1 is 80 or more, P2 60, P3 35, P4 below that. The call-taker decides the final priority.",
+   "keywords": [
+    "priority",
+    "p1",
+    "p2",
+    "severity",
+    "score",
+    "reasons",
+    "calculated"
+   ]
+  },
+  {
+   "q": "What does location confidence mean?",
+   "a": "The place the caller said is matched against the gazetteer; the percentage shows how close the match is. If the handset location agrees, confidence rises; if it conflicts by more than 2 km the match is flagged. Always confirm the address with the caller, especially below 60 percent.",
+   "keywords": [
+    "location",
+    "confidence",
+    "address",
+    "gazetteer",
+    "handset",
+    "aml",
+    "map",
+    "percent"
+   ]
+  },
+  {
+   "q": "Which languages are supported?",
+   "a": "Arabic (Gulf, Levantine, Egyptian and Maghrebi markers) and English are built and tested. Hindi, Tamil and Malayalam appear as audio samples only; recognition and extraction for them are planned. The sample voices are synthetic.",
+   "keywords": [
+    "language",
+    "arabic",
+    "english",
+    "hindi",
+    "tamil",
+    "malayalam",
+    "dialect",
+    "support"
+   ]
+  },
+  {
+   "q": "What is shadow mode?",
+   "a": "In shadow mode the AI runs and logs everything but shows nothing to call-takers and writes nothing to CAD. Its output is scored against what call-takers actually enter (incident type, location, cue recall) so the safety board can decide when to switch to assist mode.",
+   "keywords": [
+    "shadow",
+    "mode",
+    "score",
+    "gate",
+    "safety",
+    "board",
+    "rollout"
+   ]
+  },
+  {
+   "q": "How do I switch a feature off (kill switch)?",
+   "a": "Admin page, 'Mode and kill switches': untick extraction, location, cues, severity, SOP or CAD writes. The transcript keeps flowing and the call-taker works as before. Every toggle is recorded in the audit log. The API is POST /api/admin/features/{name}.",
+   "keywords": [
+    "kill",
+    "switch",
+    "disable",
+    "turn off",
+    "feature",
+    "admin",
+    "toggle"
+   ]
+  },
+  {
+   "q": "How does the audit trail work and how do I verify it?",
+   "a": "Every transcript line, suggestion, cue, accept, edit and CAD write is recorded in an append-only log where each record is HMAC-chained to the previous one. Any edit, deletion or reordering breaks the chain. Verify on the admin page or with GET /api/audit/verify.",
+   "keywords": [
+    "audit",
+    "log",
+    "verify",
+    "tamper",
+    "hmac",
+    "trail",
+    "record"
+   ]
+  },
+  {
+   "q": "What is simulated and what is real in the CCC page?",
+   "a": "The calls are replayed from scripted scenarios through the real extraction, location and rules code. Dispatch, the units, their movement, ETAs and the time-lapse clock are simulated. Unit recommendation is a Phase 2 feature and is not built in the product.",
+   "keywords": [
+    "simulation",
+    "simulated",
+    "ccc",
+    "real",
+    "dispatch",
+    "units",
+    "demo",
+    "phase"
+   ]
+  },
+  {
+   "q": "Does the system dispatch units?",
+   "a": "No. In the MVP the Co-Pilot pre-fills the CAD record and the dispatcher dispatches. The CCC simulation page shows what Phase 2 unit recommendation could look like, with a human confirming each dispatch when autopilot is off.",
+   "keywords": [
+    "dispatch",
+    "units",
+    "recommend",
+    "send",
+    "ambulance"
+   ]
+  },
+  {
+   "q": "What does 'low audio quality' or 'verify' mean?",
+   "a": "The speech confidence for that segment was low (noise, sirens, panic). Fields derived from it have lower confidence and carry a verify note. Read those values back to the caller instead of trusting them.",
+   "keywords": [
+    "audio",
+    "quality",
+    "noise",
+    "verify",
+    "low",
+    "confidence",
+    "dashed"
+   ]
+  },
+  {
+   "q": "Where does data go? Is anything sent outside the centre?",
+   "a": "By default nothing leaves the centre: extraction, location, rules and the audit log run locally. Optional AI services (an LLM for the support agent or draft summaries, hosted speech recognition) are off by default, need explicit configuration, and sending call data to an LLM needs a separate opt-in. Every such request is recorded in the audit log.",
+   "keywords": [
+    "data",
+    "privacy",
+    "external",
+    "cloud",
+    "llm",
+    "send",
+    "leave",
+    "sovereign",
+    "on-premise"
+   ]
+  },
+  {
+   "q": "What is the AI agent and what can it do?",
+   "a": "The AI agent is a read-only helper (the robot icon at the bottom right). It explains how the system works, looks up protocol questions, explains a case's priority and cues, and checks system and audit status. It cannot dispatch, change records or give medical advice. It can run on a local model on your own machine (Ollama), on Claude, or on any OpenAI-compatible server; with none configured it falls back to keyword help over these answers.",
+   "keywords": [
+    "agent",
+    "support",
+    "assistant",
+    "ai",
+    "chat",
+    "help",
+    "claude",
+    "local",
+    "ollama",
+    "llama",
+    "model",
+    "icon",
+    "robot"
+   ]
+  },
+  {
+   "q": "What are SOP instructions on screen?",
+   "a": "Sample protocol text shown when a cue calls for it, for example start compressions for not breathing. It is demo text. The centre must replace it with its own approved protocol cards, signed off by its safety board, before any live use.",
+   "keywords": [
+    "sop",
+    "instruction",
+    "protocol",
+    "cpr",
+    "approved",
+    "card",
+    "pre-arrival"
+   ]
+  },
+  {
+   "q": "How do I start the app and run the tests?",
+   "a": "pip install -r requirements.txt; python -m copilot opens http://127.0.0.1:8080; python -m pytest runs the tests; python -m copilot.eval replays the scenarios against the KPI targets. COPILOT_API_KEY protects the API, COPILOT_MODE=shadow starts in shadow mode.",
+   "keywords": [
+    "run",
+    "start",
+    "install",
+    "test",
+    "pytest",
+    "setup",
+    "api key",
+    "env"
+   ]
+  },
+  {
+   "q": "What do the KPI targets mean?",
+   "a": "They are design goals for the business case, for example cue recall 95 percent or more for the MVP and 99 percent in production. They must be measured on the client's own call audio in the proof of concept; the bundled scenarios were written with the keyword lists, so their scores prove the pipeline works, not real accuracy.",
+   "keywords": [
+    "kpi",
+    "target",
+    "accuracy",
+    "recall",
+    "wer",
+    "measure",
+    "goal"
+   ]
+  },
+  {
+   "q": "Why did a field show 'AI now suggests'?",
+   "a": "You already accepted or edited that field, and the AI later extracted a different value. Your value is kept; the alternative is shown so you can change your mind. Nothing is overwritten.",
+   "keywords": [
+    "ai now suggests",
+    "alternative",
+    "overwrite",
+    "changed",
+    "conflict"
+   ]
+  },
+  {
+   "q": "What does the AI draft summary do?",
+   "a": "If an LLM is configured and call-data sharing is explicitly allowed, it writes a short narrative from the transcript as a suggested field marked 'AI draft'. Severity and priority stay rule-based. You accept, edit or reject it like any other field.",
+   "keywords": [
+    "draft",
+    "summary",
+    "narrative",
+    "llm",
+    "ai",
+    "text"
+   ]
+  }
+ ]
+}

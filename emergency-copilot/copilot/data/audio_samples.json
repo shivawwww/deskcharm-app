@@ -1,0 +1,15 @@
+{
+  "_note": "Same emergency report in five languages. Synthetic voice for UI demonstration only; translations should be reviewed by native speakers before any wider use.",
+  "samples": [
+    {"id": "en", "voice": "en-gb", "name": "English", "native": "English", "dir": "ltr",
+     "text": "Please help, my father has collapsed and is not breathing. We are on Hamdan Street in Abu Dhabi."},
+    {"id": "ar", "voice": "ar", "name": "Arabic", "native": "العربية", "dir": "rtl",
+     "text": "أرجوك ساعدني، أبي فاقد الوعي وما يتنفس. نحن في شارع حمدان في أبوظبي."},
+    {"id": "hi", "voice": "hi", "name": "Hindi", "native": "हिन्दी", "dir": "ltr",
+     "text": "कृपया मदद कीजिए, मेरे पिता बेहोश हो गए हैं और सांस नहीं ले रहे हैं। हम अबू धाबी में हमदान स्ट्रीट पर हैं।"},
+    {"id": "ta", "voice": "ta", "name": "Tamil", "native": "தமிழ்", "dir": "ltr",
+     "text": "தயவுசெய்து உதவுங்கள், என் தந்தை மயங்கி விழுந்துவிட்டார், அவர் மூச்சு விடவில்லை. நாங்கள் அபுதாபியில் ஹம்தான் தெருவில் இருக்கிறோம்."},
+    {"id": "ml", "voice": "ml", "name": "Malayalam", "native": "മലയാളം", "dir": "ltr",
+     "text": "ദയവായി സഹായിക്കൂ, എന്റെ അച്ഛൻ ബോധരഹിതനായി വീണു, ശ്വസിക്കുന്നില്ല. ഞങ്ങൾ അബുദാബിയിലെ ഹംദാൻ സ്ട്രീറ്റിലാണ്."}
+  ]
+}

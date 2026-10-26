@@ -1,0 +1,34 @@
+{
+  "id": "ar_alain_traffic",
+  "title": "Gulf Arabic — rollover on Jebel Hafeet Road (Al Ain)",
+  "caller_number": "+971500000005",
+  "aml": {
+    "lat": 24.0615,
+    "lon": 55.7705,
+    "accuracy_m": 60
+  },
+  "turns": [
+    {
+      "speaker": "calltaker",
+      "text": "مركز الطوارئ، وين الحادث؟"
+    },
+    {
+      "speaker": "caller",
+      "text": "حادث على طريق جبل حفيت، سيارة انقلبت وفيها اشخاص عالقين"
+    },
+    {
+      "speaker": "caller",
+      "text": "فيه ثلاثة اشخاص وواحد منهم ينزف وطفل صغير عمره ٤ سنوات"
+    }
+  ],
+  "expected": {
+    "incident_type": "TRAFFIC",
+    "location": "Jebel Hafeet Road",
+    "region": "Al Ain Region",
+    "cues": [
+      "trapped",
+      "child",
+      "heavy_bleeding"
+    ]
+  }
+}

@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command &amp; Control Centre Use Cases</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23ef4444%27/%3E%3Cpath d=%27M9 22v-6a7 7 0 0 1 14 0v6M6 22h20M16 6v3%27 stroke=%27white%27 stroke-width=%272.4%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E">
+<meta property="og:title" content="CCC Co-Pilot: AI Emergency Call Co-Pilot"><meta property="og:description" content="Human-in-the-loop AI beside every emergency call-taker: transcription, critical cues, location, SOP guidance and CAD pre-fill.">
+<meta name="description" content="Use cases for the AI Emergency Call Co-Pilot in a Command and Control Centre: real call scenarios, Abu Dhabi coverage, governance and roadmap.">
+<style>
+:root{
+  --bg:#f5f7fa;--surface:#ffffff;--surface2:#eef2f7;--line:#dbe2ea;--text:#14202e;--muted:#5a6b7d;
+  --brand:#2457e6;--brand-ink:#ffffff;--ok:#16a34a;--warn:#d97706;--bad:#dc2626;--shadow:0 6px 24px rgba(20,32,46,.08);
+  --medical:#ef4444;--fire:#f97316;--traffic:#ca8a04;--crime:#6366f1;--language:#0891b2;--location:#16a34a;--assist:#2457e6;--governance:#8b5cf6;--supervisor:#0ea5e9;--roadmap:#64748b;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b121a;--surface:#131c27;--surface2:#1a2533;--line:#263344;--text:#e7eef6;--muted:#93a4b6;--brand:#5b8cff;--brand-ink:#08111d;--shadow:0 6px 24px rgba(0,0,0,.35);
+  --traffic:#eab308;--ok:#22c55e;--warn:#f59e0b;--bad:#f87171}}
+:root[data-theme="dark"]{
+  --bg:#0b121a;--surface:#131c27;--surface2:#1a2533;--line:#263344;--text:#e7eef6;--muted:#93a4b6;--brand:#5b8cff;--brand-ink:#08111d;--shadow:0 6px 24px rgba(0,0,0,.35);
+  --traffic:#eab308;--ok:#22c55e;--warn:#f59e0b;--bad:#f87171}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",sans-serif}
+a{color:var(--brand)}svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-.2em}
+.wrap{max-width:none;margin:0 auto;padding:0 clamp(16px,3.2vw,56px)}
+.sr{position:absolute;left:-9999px}.skip:focus{left:12px;top:12px;background:var(--brand);color:var(--brand-ink);padding:8px 12px;border-radius:8px;z-index:100}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+/* nav */
+.nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:18px;height:60px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;text-decoration:none;color:var(--text);white-space:nowrap}
+.logo .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#ef4444,#f97316);display:grid;place-items:center;color:#fff}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0 0 0 auto;padding:0;overflow:auto}
+.nav li a{display:block;padding:8px 9px;border-radius:8px;text-decoration:none;color:var(--muted);font-weight:600;font-size:13.5px;white-space:nowrap}
+.nav li a:hover{background:var(--surface2);color:var(--text)}
+.iconbtn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
+/* hero */
+.hero{padding:56px 0 40px;background:radial-gradient(900px 400px at 85% -10%,color-mix(in srgb,var(--brand) 18%,transparent),transparent),radial-gradient(700px 360px at 0% 0%,color-mix(in srgb,var(--fire) 14%,transparent),transparent)}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:5px 12px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--muted)}
+h1{font-size:clamp(30px,4.6vw,52px);line-height:1.08;margin:14px 0 14px;letter-spacing:-.02em}
+h1 em{font-style:normal;background:linear-gradient(90deg,#ef4444,#f97316);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:18px;color:var(--muted);max-width:60ch;margin:0 0 22px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--text);text-decoration:none;cursor:pointer;font-size:15px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:30px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat b{display:block;font-size:26px;letter-spacing:-.02em}.stat span{color:var(--muted);font-size:13px}
+.hero-art{width:100%;height:auto;border-radius:20px;box-shadow:var(--shadow)}
+/* sections */
+section.block{padding:56px 0}section.alt{background:var(--surface);border-block:1px solid var(--line)}
+.kicker{color:var(--brand);font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h2{font-size:clamp(24px,3vw,34px);margin:6px 0 8px;letter-spacing:-.01em}.sub{color:var(--muted);max-width:100ch;margin:0 0 26px}
+/* pipeline */
+.pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;counter-reset:s}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;position:relative}
+.alt .step{background:var(--bg)}
+.step .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;margin-bottom:10px}
+.step h3{margin:0 0 4px;font-size:15px}.step p{margin:0;color:var(--muted);font-size:13.5px}
+.step:not(:last-child)::after{content:"";position:absolute;right:-9px;top:34px;width:8px;height:8px;border-top:2px solid var(--muted);border-right:2px solid var(--muted);transform:rotate(45deg);z-index:2}
+/* filters + cards */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:7px 14px;border-radius:99px;font-weight:700;font-size:14px;cursor:pointer;display:inline-flex;gap:7px;align-items:center}
+.chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{--cc:var(--brand);background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s,border-color .18s;text-align:start;padding:0;font:inherit;color:inherit;cursor:pointer;position:relative}
+.card:hover,.card:focus-visible{transform:translateY(-4px);box-shadow:0 16px 36px rgba(12,28,48,.18);border-color:color-mix(in srgb,var(--cc) 55%,var(--line))}
+.art{position:relative;aspect-ratio:16/9;overflow:hidden;background:#0b1626}.art>svg{width:100%;height:100%;display:block;transition:transform .6s}.card:hover .art>svg{transform:scale(1.05)}
+.art::after{content:"";position:absolute;inset:auto 0 0 0;height:46%;background:linear-gradient(to top,rgba(5,12,22,.55),transparent);pointer-events:none}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.st{font-size:10.5px;font-weight:800;letter-spacing:.06em;padding:3px 9px;border-radius:99px;background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.st i{width:6px;height:6px;border-radius:50%;background:currentColor}.st.road{background:var(--surface2);color:var(--muted)}
+.cico{position:absolute;inset-inline-end:14px;bottom:-20px;z-index:3;width:44px;height:44px;border-radius:12px;background:var(--cc);color:#fff;display:grid;place-items:center;box-shadow:0 8px 18px rgba(0,0,0,.28);border:3px solid var(--surface)}
+.card .body{padding:26px 18px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.catline{font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--cc)}
+.card h3{margin:0;font-size:18px;line-height:1.28;letter-spacing:-.005em}.card p{margin:0;color:var(--muted);font-size:14.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card .foot{margin-top:auto;padding-top:12px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+.card .foot .who{display:inline-flex;gap:6px;align-items:center}.card .more{margin-inline-start:auto;display:inline-flex;align-items:center;gap:6px;color:var(--cc);font-weight:700}
+[dir=rtl] .card .more svg,[dir=rtl] .btn svg.flip{transform:scaleX(-1)}
+.card.roadmap .art>svg{filter:saturate(.55) brightness(.92)}.card.roadmap{border-style:dashed}
+.langbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 14px}.langbar .lb{font-size:12.5px;color:var(--muted);font-weight:700;margin-inline-end:4px}
+.langbar button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:99px;padding:6px 14px;font:inherit;font-weight:700;cursor:pointer}.langbar button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.kicker{display:block}.langnote{font-size:12.5px;color:var(--muted);margin:-6px 0 14px}
+.empty{display:none;color:var(--muted);padding:30px;text-align:center}
+/* modal */
+dialog{border:0;padding:0;border-radius:22px;max-width:760px;width:calc(100% - 28px);background:var(--surface);color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.45)}
+dialog::backdrop{background:rgba(5,10,16,.6);backdrop-filter:blur(3px)}
+.m-art{position:relative;aspect-ratio:16/8;overflow:hidden;background:#0b1626}.m-art>svg{width:100%;height:100%;display:block}.m-art .iconbtn{position:absolute;top:12px;inset-inline-end:12px;background:rgba(7,16,28,.7);border-color:rgba(255,255,255,.2);color:#fff}
+.m-title{padding:18px 22px 0}.m-title h3{margin:0;font-size:22px;line-height:1.25}.m-title small{color:var(--muted)}
+.m-head{display:none}
+.m-head h3{margin:0;font-size:21px}.m-head small{opacity:.85}.m-head .iconbtn{margin-left:auto;background:rgba(255,255,255,.18);border-color:transparent;color:#fff}
+.m-body{padding:20px 22px 24px;display:grid;gap:16px}
+.m-body h4{margin:0 0 6px;font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.m-body ul{margin:0;padding-left:20px}.m-body li{margin:3px 0}
+.callout{border-left:4px solid var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface));padding:10px 14px;border-radius:0 12px 12px 0}
+.callout.warn{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--surface))}
+/* demo */
+.demo{display:grid;grid-template-columns:1fr 1.15fr;gap:16px}
+.panel{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:14px;min-height:430px}
+.alt .panel{background:var(--bg)}
+.demo-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+select{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;max-width:100%}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:var(--muted)}.live i{width:9px;height:9px;border-radius:50%;background:var(--bad);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+.tr{display:flex;flex-direction:column;gap:8px;max-height:392px;overflow:auto;padding-right:4px}
+.msg{padding:9px 12px;border-radius:14px;max-width:92%;border:1px solid var(--line);background:var(--surface);animation:pop .3s}
+.msg.calltaker{align-self:flex-end;background:color-mix(in srgb,var(--brand) 12%,var(--surface));border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}
+.msg small{display:block;color:var(--muted);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}.msg.lowq{border-style:dashed;border-color:var(--warn)}
+mark{background:color-mix(in srgb,var(--warn) 40%,transparent);color:inherit;border-radius:4px;padding:0 3px}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}}
+.cuebar{display:flex;gap:6px;flex-wrap:wrap;min-height:34px;margin-bottom:10px}
+.cue{display:inline-flex;gap:6px;align-items:center;padding:5px 10px;border-radius:99px;font-weight:800;font-size:13px;color:#fff;background:var(--bad);animation:pop .3s}.cue.high{background:var(--warn)}
+.prio{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.badge{font-size:24px;font-weight:900;padding:6px 14px;border-radius:12px;background:var(--surface2);min-width:62px;text-align:center}
+.badge.P1{background:var(--bad);color:#fff}.badge.P2{background:#f97316;color:#fff}.badge.P3{background:var(--warn);color:#fff}.badge.P4{background:var(--ok);color:#fff}
+.reasons{font-size:12.5px;color:var(--muted)}
+.fields{display:grid;gap:6px}.f{display:grid;grid-template-columns:96px 1fr 52px;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:7px 10px;animation:pop .3s}
+.f span{color:var(--muted);font-size:12.5px}.f b{word-break:break-word}.bar{height:5px;border-radius:3px;background:var(--surface2);overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+.acts{display:flex;gap:4px;margin-top:2px}
+.nq{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--brand);background:color-mix(in srgb,var(--brand) 8%,var(--surface))}
+.casemini{margin-top:10px;font-size:13.5px;color:var(--muted)}.casemini b{color:var(--text)}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px}
+/* map */
+.mapwrap{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:12px;position:relative}
+.mapwrap svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:10px 4px 2px}.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.pin{animation:pulse 2s infinite;transform-origin:center;transform-box:fill-box}@keyframes pulse{50%{opacity:.35}}
+/* personas, governance, kpi, roadmap */
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px}.alt .tile{background:var(--bg)}
+.tile .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;margin-bottom:12px}
+.tile h3{margin:0 0 6px;font-size:18px}.tile p{margin:0 0 8px;color:var(--muted);font-size:15px}.tile ul{margin:0;padding-left:18px;color:var(--text);font-size:14.5px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;font-size:15px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}th{background:var(--surface2);font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}tr:last-child td{border-bottom:0}
+.tablewrap{overflow:auto;border-radius:16px}
+.gmap{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:12px;margin-bottom:8px}
+.gbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.gbar select{flex:1;min-width:220px}
+#gFrame[hidden],#gDiv[hidden]{display:none}
+#gDiv{width:100%;height:clamp(420px,66vh,820px);border-radius:14px;background:var(--surface2)}
+#gFrame{width:100%;height:clamp(420px,66vh,820px);border:0;border-radius:14px;background:var(--surface2);display:block}
+@media(max-width:700px){#gFrame,#gDiv{height:340px}}
+.gmap:fullscreen{display:flex;flex-direction:column;border-radius:0;padding:12px;background:var(--surface)}.gmap:fullscreen #gFrame,.gmap:fullscreen #gDiv{flex:1;height:auto}.gmap:fullscreen .note{display:none}
+.intg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}.ig{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.ig .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand)}.ig h3{margin:4px 0 0;font-size:16px}.ig p{margin:0;color:var(--muted);font-size:14px}.ig small{color:var(--muted);font-size:12.5px}
+.pill{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.05em;padding:2px 9px;border-radius:99px}.pill.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}.pill.plan{background:var(--surface2);color:var(--muted)}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:8px}.faq summary{cursor:pointer;font-weight:700}.faq p{margin:8px 0 0;color:var(--muted)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}.vgrid.big{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.vc{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:0}.alt .vc{background:var(--bg)}.vc video{width:100%;aspect-ratio:16/9;display:block;background:#000}.vc .vb{padding:12px 16px 14px}.vc h3{margin:0 0 4px;font-size:16px}.vc p{margin:0;color:var(--muted);font-size:13.5px}
+.audgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.aud{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.aud header{display:flex;align-items:center;gap:10px}.aud header .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;background:var(--language)}
+.aud h3{margin:0;font-size:17px}.aud small{color:var(--muted)}.aud audio{width:100%;height:40px}
+.aud blockquote{margin:0;padding:10px 12px;border-radius:12px;background:var(--surface2);font-size:15px}
+.aud .res{font-size:13.5px;color:var(--muted);display:grid;gap:4px}.aud .res b{color:var(--text)}
+.st{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:800}.st.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}.st.no{background:var(--surface2);color:var(--muted)}
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;position:relative}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;border-top:5px solid var(--brand)}
+.phase:nth-child(2){border-top-color:var(--governance)}.phase:nth-child(3){border-top-color:var(--fire)}
+.phase h3{margin:0}.phase small{color:var(--muted);font-weight:700}.phase ul{margin:10px 0 0;padding-left:18px;color:var(--muted)}
+.state{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:800;background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok);margin-left:6px}
+.state.todo{background:var(--surface2);color:var(--muted)}
+footer{padding:36px 0 60px;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+footer .fgrid{display:grid;grid-template-columns:2fr 1.5fr 1.2fr;gap:20px;margin-bottom:18px;line-height:1.7}footer .fgrid a{color:var(--brand)}@media(max-width:700px){footer .fgrid{grid-template-columns:1fr}}
+footer .by{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:var(--text);font-size:15px}
+footer .by .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+@media(max-width:980px){.hero .wrap,.demo{grid-template-columns:1fr}.pipe{grid-template-columns:repeat(2,1fr)}.step::after{display:none!important}.phases{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.nav ul{display:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="sr skip" href="#usecases">Skip to use cases</a>
+
+<!-- ICON SPRITE (hand-drawn, stroke icons) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+<symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14h3v5H5a1 1 0 0 1-1-1v-4zM20 14h-3v5h2a1 1 0 0 0 1-1v-4z"/><path d="M17 19c0 1.5-2 2-5 2"/></symbol>
+<symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.2 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></symbol>
+<symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16v-4l2-5h12l2 5v4M2.5 16h19"/><circle cx="7.5" cy="16.5" r="1.8"/><circle cx="16.5" cy="16.5" r="1.8"/><path d="M6 12h12"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.5"/></symbol>
+<symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M8 15h8"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 12h1M7 8v8M11 4v16M15 8v8M19 10v4M22 12h-1"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z"/><path d="M19 17l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></symbol>
+<symbol id="i-db" viewBox="0 0 24 24"><path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v9M6.3 6.3a8 8 0 1 0 11.4 0"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7V3z"/><path d="M14 3v4h4M10 13h5M10 17h5"/></symbol>
+<symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M17 14a6 6 0 0 1 4 6"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3V8z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 9h4l4 4v3h-8"/><circle cx="6.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></symbol>
+<symbol id="i-siren" viewBox="0 0 24 24"><path d="M7 18v-6a5 5 0 0 1 10 0v6M4 18h16M12 3v2M4.5 7L6 8.5M19.5 7L18 8.5M9 21h6"/></symbol>
+<symbol id="i-translate" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.5 4 3 7 6 8M11 5c-.5 3-3 7-7 9M13 21l4-10 4 10M14.5 17.5h5"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+<symbol id="i-grad" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11v5c0 1 3 3 6 3s6-2 6-3v-5"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-8"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><path d="M5 21V4h9v17M14 9h5v12M8 8h3M8 12h3M8 16h3M3 21h18"/></symbol>
+<symbol id="i-hospital" viewBox="0 0 24 24"><path d="M4 21V6h16v15M12 9v6M9 12h6M2 21h20"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8V4z"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+<symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-wifioff" viewBox="0 0 24 24"><path d="M2 8.8a15 15 0 0 1 4-2.3M22 8.8a15 15 0 0 0-8.5-3.7M5 12.5a10 10 0 0 1 3-1.8M19 12.5a10 10 0 0 0-3.2-2M9 16a5 5 0 0 1 6 0M12 20h.01M3 3l18 18"/></symbol>
+<symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+</defs>
+</svg>
+
+<header class="nav"><div class="wrap">
+  <a class="logo" href="#top"><span class="mark"><svg class="i"><use href="#i-siren"/></svg></span> CCC Co-Pilot</a>
+  <ul>
+    <li><a href="#how">How it works</a></li><li><a href="#usecases">Use cases</a></li><li><a href="#demo">Live demo</a></li><li><a href="#audio">Audio</a></li><li><a href="#videos">Videos</a></li>
+    <li><a href="#coverage">Abu Dhabi</a></li><li><a href="#roles">Roles</a></li><li><a href="#trust">Safety</a></li><li><a href="#integrations">Integrations</a></li><li><a href="#deploy">Deploy</a></li><li><a href="#roadmap">Roadmap</a></li><li><a href="ccc.html"><b>Full CCC simulation</b></a></li>
+  </ul>
+  <button class="iconbtn" id="theme" aria-label="Toggle dark mode"><svg class="i"><use href="#i-moon"/></svg></button>
+</div></header>
+
+<main id="top">
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="eyebrow"><svg class="i"><use href="#i-shield"/></svg> Human in the loop · on-premise · Arabic and English</span>
+    <h1>Every emergency call, <em>understood in seconds</em>, decided by people.</h1>
+    <p class="lead">The AI Emergency Call Co-Pilot sits beside each call-taker in the Command and Control Centre. It transcribes, listens for critical cues, finds the location and pre-fills the CAD record. The call-taker accepts, edits or rejects every field.</p>
+    <div class="cta"><a class="btn primary" href="#demo"><svg class="i"><use href="#i-play"/></svg> Watch a simulated call</a><a class="btn" href="#usecases"><svg class="i"><use href="#i-list"/></svg> Browse use cases</a><a class="btn" href="ccc.html"><svg class="i"><use href="#i-monitor"/></svg> Open full CCC simulation</a></div>
+    <div class="stats">
+      <div class="stat"><b id="statUC">0</b><span>use cases covered</span></div>
+      <div class="stat"><b>3</b><span>Abu Dhabi regions</span></div>
+      <div class="stat"><b>4</b><span>Arabic dialect families</span></div>
+      <div class="stat"><b>800 ms</b><span>design latency budget (p95)</span></div>
+    </div>
+  </div>
+  <!-- hero illustration: call-taker console -->
+  <svg class="hero-art" viewBox="0 0 560 440" role="img" aria-label="Illustration of a call-taker console showing a live transcript, a map pin and a priority badge">
+    <defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16233a"/><stop offset="1" stop-color="#0c1422"/></linearGradient>
+    <linearGradient id="hg2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ef4444"/><stop offset="1" stop-color="#f97316"/></linearGradient></defs>
+    <rect width="560" height="440" rx="22" fill="url(#hg)"/>
+    <g opacity=".12" stroke="#fff"><path d="M0 110h560M0 220h560M0 330h560M110 0v440M220 0v440M330 0v440M440 0v440"/></g>
+    <rect x="34" y="40" width="492" height="290" rx="16" fill="#0f1b2e" stroke="#2a3d5c" stroke-width="2"/>
+    <rect x="50" y="56" width="212" height="258" rx="10" fill="#142238"/>
+    <g font-family="system-ui" font-size="11" fill="#9db2cf"><text x="62" y="76" font-weight="700" fill="#dbe7f7">LIVE TRANSCRIPT</text></g>
+    <rect x="62" y="88" width="150" height="34" rx="9" fill="#1e3354"/><rect x="72" y="98" width="110" height="5" rx="2" fill="#6f87ad"/><rect x="72" y="108" width="70" height="5" rx="2" fill="#6f87ad"/>
+    <rect x="100" y="130" width="150" height="34" rx="9" fill="#24467a"/><rect x="110" y="140" width="120" height="5" rx="2" fill="#a9c4ee"/><rect x="110" y="150" width="60" height="5" rx="2" fill="#a9c4ee"/>
+    <rect x="62" y="172" width="170" height="44" rx="9" fill="#1e3354"/><rect x="72" y="182" width="90" height="5" rx="2" fill="#6f87ad"/><rect x="164" y="180" width="54" height="9" rx="3" fill="#f59e0b" opacity=".75"/><rect x="72" y="194" width="130" height="5" rx="2" fill="#6f87ad"/><rect x="72" y="204" width="80" height="5" rx="2" fill="#6f87ad"/>
+    <g transform="translate(62 232)"><path d="M0 24h6M10 14v20M18 4v40M26 12v24M34 18v12M42 22v4M50 8v32M58 16v16M66 22v4M74 12v24M82 20v8" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/></g>
+    <rect x="274" y="56" width="238" height="52" rx="10" fill="#3b1620" stroke="#ef4444"/><text x="290" y="78" font-family="system-ui" font-size="13" font-weight="800" fill="#fecaca">⚠ NOT BREATHING</text><text x="290" y="96" font-family="system-ui" font-size="11" fill="#fca5a5">“he is not breathing”</text>
+    <rect x="274" y="118" width="64" height="44" rx="10" fill="#ef4444"/><text x="306" y="148" text-anchor="middle" font-family="system-ui" font-size="22" font-weight="900" fill="#fff">P1</text>
+    <rect x="346" y="118" width="166" height="44" rx="10" fill="#142238"/><text x="358" y="136" font-family="system-ui" font-size="11" fill="#9db2cf">Incident</text><text x="358" y="153" font-family="system-ui" font-size="13" font-weight="700" fill="#dbe7f7">Medical emergency</text>
+    <rect x="274" y="172" width="238" height="142" rx="10" fill="#10253a"/>
+    <path d="M274 230c40-20 70 10 110-10s80-8 128-22M274 280c50-14 90 12 130-8s70-4 108-14M330 172c-10 50 20 90 6 142M440 172c10 40-10 80 4 142" stroke="#1f4a6e" stroke-width="2" fill="none"/>
+    <circle cx="420" cy="238" r="26" fill="#ef4444" opacity=".2"/><circle cx="420" cy="238" r="9" fill="#ef4444"/><circle cx="420" cy="238" r="3.5" fill="#fff"/>
+    <circle cx="352" cy="272" r="5" fill="#22c55e"/><circle cx="480" cy="204" r="5" fill="#3b82f6"/><circle cx="318" cy="198" r="5" fill="#f97316"/>
+    <rect x="224" y="334" width="112" height="14" rx="6" fill="#22344f"/><rect x="170" y="346" width="220" height="12" rx="6" fill="#1a2a42"/>
+    <!-- headset -->
+    <g transform="translate(436 336)" fill="none" stroke="url(#hg2)" stroke-width="7" stroke-linecap="round"><path d="M10 52v-8a38 38 0 0 1 76 0v8"/><rect x="4" y="50" width="16" height="30" rx="7" fill="#f97316" stroke="none"/><rect x="76" y="50" width="16" height="30" rx="7" fill="#ef4444" stroke="none"/><path d="M84 80c0 14-14 18-34 18" stroke-width="5"/></g>
+    <g transform="translate(40 352)" fill="#fff" opacity=".9" font-family="system-ui"><text font-size="13" font-weight="800" y="14">AI proposes</text><text font-size="13" y="34" fill="#9db2cf">You decide</text></g>
+  </svg>
+</div></section>
+
+<section class="block alt" id="how"><div class="wrap">
+  <span class="kicker">How it works</span><h2>From “hello” to a pre-filled CAD record</h2>
+  <p class="sub">Six stages run in parallel on every call. Rules, not AI, choose the next protocol question, and nothing reaches CAD until the call-taker accepts it.</p>
+  <div class="pipe">
+    <div class="step"><div class="ic" style="background:#2457e6"><svg class="i"><use href="#i-phone"/></svg></div><h3>1 · Call arrives</h3><p>Audio fork, caller number and handset location enter once.</p></div>
+    <div class="step"><div class="ic" style="background:#0891b2"><svg class="i"><use href="#i-mic"/></svg></div><h3>2 · Speech</h3><p>Streaming transcript, Arabic dialect and code-switch detection, quality score.</p></div>
+    <div class="step"><div class="ic" style="background:#8b5cf6"><svg class="i"><use href="#i-spark"/></svg></div><h3>3 · Understand</h3><p>Incident type, people, injuries, hazards and critical cues.</p></div>
+    <div class="step"><div class="ic" style="background:#16a34a"><svg class="i"><use href="#i-pin"/></svg></div><h3>4 · Locate</h3><p>Spoken place matched to the gazetteer, fused with handset position.</p></div>
+    <div class="step"><div class="ic" style="background:#f97316"><svg class="i"><use href="#i-list"/></svg></div><h3>5 · Guide</h3><p>Deterministic SOP rules pick the next question and tick the checklist.</p></div>
+    <div class="step"><div class="ic" style="background:#ef4444"><svg class="i"><use href="#i-db"/></svg></div><h3>6 · Confirm</h3><p>Call-taker accepts, edits or rejects. Accepted fields go to CAD and the audit log.</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="usecases"><div class="wrap">
+  <span class="kicker" id="ucKicker">Use cases</span><h2 id="ucTitle">What the Command and Control Centre can do with it</h2>
+  <p class="sub" id="ucSub"></p>
+  <div class="langbar" id="langbar" role="group" aria-label="Language"></div><p class="langnote" id="ucNote" hidden></p>
+  <div class="filters" id="filters" role="group" aria-label="Filter use cases"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">No use cases in this category.</div>
+</div></section>
+
+<section class="block alt" id="demo"><div class="wrap">
+  <span class="kicker">Live demo</span><h2>Replay a call, step by step</h2>
+  <p class="sub">These frames were produced by the actual extraction, location and rules code in this project, replayed from scripted calls. It is a simulation, not live audio.</p>
+  <div class="demo-bar">
+    <label class="sr" for="scSel">Scenario</label><select id="scSel"></select>
+    <button class="btn primary" id="play"><svg class="i"><use href="#i-play"/></svg><span>Play</span></button>
+    <button class="btn" id="next"><svg class="i"><use href="#i-arrow"/></svg> Next line</button>
+    <button class="btn" id="reset"><svg class="i"><use href="#i-reset"/></svg> Restart</button>
+    <span class="live"><i></i> SIMULATED CALL</span>
+  </div>
+  <div class="demo">
+    <div class="panel"><div class="kicker" style="margin-bottom:8px">Live transcript <span id="lang" style="color:var(--muted);text-transform:none;letter-spacing:0"></span></div><div class="tr" id="tr" aria-live="polite"></div></div>
+    <div class="panel">
+      <div class="cuebar" id="cues" aria-live="assertive"></div>
+      <div class="prio"><div class="badge" id="badge">–</div><div class="reasons" id="reasons">Waiting for the first caller line…</div></div>
+      <div class="fields" id="fields"></div>
+      <div class="nq" id="nq" hidden></div>
+      <div class="casemini" id="casemini"></div>
+      <div class="note">Every field above is a suggestion. In the product each one has accept, edit and reject buttons, and only accepted values reach CAD.</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="block" id="audio"><div class="wrap">
+  <span class="kicker">Audio samples</span><h2>The same emergency, in five languages</h2>
+  <p class="sub">Press play to hear a caller report a collapse in each language. The voices are synthetic (offline speech synthesis) and the translations are illustrative, so they should be reviewed by native speakers. Real calls are noisy and unscripted. Below each clip is what the Co-Pilot's current code finds in the text.</p>
+  <div class="audgrid" id="audGrid"></div>
+  <div class="callout warn" style="margin-top:18px"><b>Language support today.</b> Arabic and English are built and tested. Hindi, Tamil and Malayalam are shown as audio and text only: speech recognition and extraction for them are planned (Phase 2 multilingual work), so the Co-Pilot does not yet understand them and says so.</div>
+</div></section>
+
+<section class="block alt" id="videos"><div class="wrap">
+  <span class="kicker">Video samples</span><h2>See it running</h2>
+  <p class="sub">Two screen recordings of the pages in this project, and four simulated camera clips. The camera clips are animations drawn for this demo, not real footage. The recordings were made offline, so the live map in them shows markers on a grid without map tiles. No video has sound.</p>
+  <div class="vgrid big">
+    <article class="vc"><video controls preload="metadata" poster="video/demo_ccc_simulation.jpg" playsinline><source src="video/demo_ccc_simulation.mp4" type="video/mp4"></video>
+      <div class="vb"><h3>CCC simulation, in real time</h3><p>Incoming calls, AI alerts, real-time SOP, manual and autopilot dispatch, a surge of six calls, and units moving on the map. 0:52 · 1.2 MB</p></div></article>
+    <article class="vc"><video controls preload="metadata" poster="video/demo_usecases_tour.jpg" playsinline><source src="video/demo_usecases_tour.mp4" type="video/mp4"></video>
+      <div class="vb"><h3>Use-case page tour</h3><p>Illustrated cards, switching between Arabic, Tamil and English, the detail dialog, replaying a call, the audio samples, the region map and the AI agent. 0:43 · 2.2 MB</p></div></article>
+  </div>
+  <h3 style="margin:28px 0 12px">Simulated camera feeds <span class="pill plan">Phase 2 concept</span></h3>
+  <p class="sub" style="margin-bottom:14px">When an incident is selected in the CCC simulation, the matching clip plays in the incident panel. Real camera fusion (ONVIF, ANPR) is planned and not built.</p>
+  <div class="vgrid">
+    <article class="vc"><video controls loop muted preload="metadata" poster="video/cctv_collision.jpg" playsinline><source src="video/cctv_collision.mp4" type="video/mp4"></video><div class="vb"><h3>Road collision</h3><p>Two cars collide, bystanders run in, an ambulance arrives. 0:12</p></div></article>
+    <article class="vc"><video controls loop muted preload="metadata" poster="video/cctv_fire.jpg" playsinline><source src="video/cctv_fire.mp4" type="video/mp4"></video><div class="vb"><h3>Building fire</h3><p>Fire and smoke, people evacuate, a fire engine arrives and sprays. 0:12</p></div></article>
+    <article class="vc"><video controls loop muted preload="metadata" poster="video/cctv_crime.jpg" playsinline><source src="video/cctv_crime.mp4" type="video/mp4"></video><div class="vb"><h3>Crime in progress</h3><p>A person flees a shop, police arrive and give chase. 0:12</p></div></article>
+    <article class="vc"><video controls loop muted preload="metadata" poster="video/cctv_medical.jpg" playsinline><source src="video/cctv_medical.mp4" type="video/mp4"></video><div class="vb"><h3>Medical emergency</h3><p>A bystander helps a collapsed person, paramedics arrive with a stretcher. 0:12</p></div></article>
+  </div>
+</div></section>
+
+<section class="block" id="coverage"><div class="wrap">
+  <span class="kicker">Abu Dhabi coverage</span><h2>Three regions, one gazetteer, nearest facilities per case</h2>
+  <p class="sub">Spoken places resolve to a region and area. Each case lists the nearest hospital, police and civil defence facility for the responding agencies. The Google map shows the real geography; the region overview below is a schematic. Coordinates are approximate demo data.</p>
+  <div class="gmap">
+    <div class="gbar"><label for="gSel" class="sr">Show on map</label>
+      <select id="gSel" aria-label="Show on Google map"></select>
+      <a class="btn" id="gOpen" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg> Open in Google Maps</a>
+      <button class="btn" id="gFull" type="button"><svg class="i" aria-hidden="true"><use href="#i-expand"/></svg> <span>Full screen</span></button></div>
+    <div id="gDiv" hidden role="application" aria-label="Google map of Abu Dhabi"></div>
+    <iframe id="gFrame" title="Google map of Abu Dhabi" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    <p class="note" style="margin:8px 4px 0">Real Google map embed (needs an internet connection; loading it shares your IP address with Google). Pick a region, demo case or facility to jump to it. For an on-premise centre the call-taker panel uses a map server you control instead.</p>
+  </div>
+  <h3 style="margin:26px 0 10px">Region overview</h3>
+  <div class="mapwrap"><svg id="map" viewBox="0 0 860 500" role="img" aria-label="Schematic map of the Emirate of Abu Dhabi showing the three regions, facilities and demo case locations"></svg>
+    <div class="legend"><span><i style="background:#3b82f6"></i>Abu Dhabi Region</span><span><i style="background:#16a34a"></i>Al Ain Region</span><span><i style="background:#f97316"></i>Al Dhafra Region</span>
+    <span><i style="background:#22c55e;border-radius:50%"></i>Hospital</span><span><i style="background:#0ea5e9;border-radius:50%"></i>Police</span><span><i style="background:#eab308;border-radius:50%"></i>Civil defence</span><span><i style="background:#ef4444;border-radius:50%"></i>Demo case</span></div></div>
+</div></section>
+
+<section class="block" id="roles"><div class="wrap">
+  <span class="kicker">Who uses it</span><h2>One system, four roles</h2><p class="sub">&nbsp;</p>
+  <div class="cards3">
+    <div class="tile"><div class="ic" style="background:#2457e6"><svg class="i"><use href="#i-headset"/></svg></div><h3>Call-taker</h3><p>Stays on the call, not on the keyboard.</p><ul><li>Live transcript with cue words highlighted</li><li>One-click accept, edit or reject per field</li><li>Next protocol question in Arabic or English</li></ul></div>
+    <div class="tile"><div class="ic" style="background:#0ea5e9"><svg class="i"><use href="#i-monitor"/></svg></div><h3>Shift supervisor</h3><p>Sees the whole floor at once.</p><ul><li>Wall of active calls sorted by priority</li><li>Region, case number and unacknowledged cues</li><li>Silent-call flag and per-feature kill switch</li></ul></div>
+    <div class="tile"><div class="ic" style="background:#8b5cf6"><svg class="i"><use href="#i-shield"/></svg></div><h3>Safety board / auditor</h3><p>Controls when AI is allowed to assist.</p><ul><li>Shadow mode scoring against call-taker entries</li><li>Tamper-evident audit chain with verification</li><li>Written gates between rollout phases</li></ul></div>
+    <div class="tile"><div class="ic" style="background:#16a34a"><svg class="i"><use href="#i-db"/></svg></div><h3>Integrator / IT</h3><p>Plugs into what the centre already runs.</p><ul><li>CAD adapters, ASR gateway, REST and WebSocket API</li><li>Gazetteer, facility and SOP data as plain JSON</li><li>On-premise, no data leaves the centre</li></ul></div>
+  </div>
+</div></section>
+
+<section class="block" id="trust"><div class="wrap">
+  <span class="kicker">Safety and trust</span><h2>Designed so a wrong suggestion cannot dispatch anything</h2><p class="sub">&nbsp;</p>
+  <div class="cards3">
+    <div class="tile"><div class="ic" style="background:#16a34a"><svg class="i"><use href="#i-check"/></svg></div><h3>Human decides</h3><p>AI only proposes. Accepted fields are never overwritten; new AI values appear as an alternative.</p></div>
+    <div class="tile"><div class="ic" style="background:#f59e0b"><svg class="i"><use href="#i-eye"/></svg></div><h3>Shadow mode first</h3><p>The AI listens and is scored before it is allowed to show anything, and writes nothing to CAD.</p></div>
+    <div class="tile"><div class="ic" style="background:#ef4444"><svg class="i"><use href="#i-power"/></svg></div><h3>Kill switches</h3><p>Switch off extraction, location, cues, severity, SOP or CAD writes. The call-taker works exactly as today.</p></div>
+    <div class="tile"><div class="ic" style="background:#8b5cf6"><svg class="i"><use href="#i-file"/></svg></div><h3>Audit chain</h3><p>Every transcript line, suggestion, cue and decision is HMAC-chained. Edits or deletions are detected.</p></div>
+    <div class="tile"><div class="ic" style="background:#0891b2"><svg class="i"><use href="#i-wifioff"/></svg></div><h3>Low quality is flagged</h3><p>Poor audio lowers confidence and is marked for verification instead of being trusted silently.</p></div>
+    <div class="tile"><div class="ic" style="background:#64748b"><svg class="i"><use href="#i-lock"/></svg></div><h3>On-premise</h3><p>Designed for in-country deployment with access control and encrypted storage.</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="integrations"><div class="wrap">
+  <span class="kicker">Integrations</span><h2>Plugs into what the centre already runs</h2>
+  <p class="sub">One adapter layer per system, so the AI never talks to a vendor directly. Status shows what exists in this repository today and what is planned.</p>
+  <div class="intg">
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-phone"/></svg></span><h3>Telephony / ACD</h3><p>SIPREC media fork, RTP and CTI events from Avaya, Cisco, Genesys, Motorola, Frequentis.</p><span class="pill plan">Planned</span><small>Today: audio and text enter through the segment API and WebSocket.</small></div>
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-globe"/></svg></span><h3>NG112 / NG911 core</h3><p>EENA NG112 and NENA i3 interfaces for caller location, multimedia and text.</p><span class="pill plan">Planned</span></div>
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-pin"/></svg></span><h3>Handset location (AML)</h3><p>Device GPS and Wi-Fi position fused with the spoken address.</p><span class="pill ok">In MVP</span><small>Accepted as input and fused with confidence.</small></div>
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-db"/></svg></span><h3>CAD / dispatch</h3><p>Hexagon, Motorola, Tritech or a local CAD: pre-filled incident, accepted field by field.</p><span class="pill ok">In MVP</span><small>Mock and generic REST adapters; vendor adapters planned.</small></div>
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-map"/></svg></span><h3>GIS</h3><p>Gazetteer import, geocoding and map display (Esri, OGC WMS/WFS, OpenStreetMap or Google Maps).</p><span class="pill ok">In MVP</span><small>JSON gazetteer; map provider is switchable.</small></div>
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-siren"/></svg></span><h3>Radio / PTT</h3><p>TETRA and P25 gateways for responder updates and transcription.</p><span class="pill plan">Planned</span></div>
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-camera"/></svg></span><h3>VMS / CCTV and city platform</h3><p>ONVIF and vendor SDKs: nearest cameras, ANPR and sensors on the incident.</p><span class="pill plan">Planned</span></div>
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-users"/></svg></span><h3>Identity</h3><p>LDAP / Active Directory with SAML or OIDC single sign-on and role-based access.</p><span class="pill plan">Planned</span><small>Today: optional API key.</small></div>
+    <div class="ig"><span class="ic"><svg class="i"><use href="#i-file"/></svg></span><h3>SIEM / logging</h3><p>Syslog and CEF export of security events and the signed audit chain.</p><span class="pill plan">Planned</span><small>Today: HMAC-chained audit log with verification.</small></div>
+  </div>
+</div></section>
+
+<section class="block alt" id="deploy"><div class="wrap">
+  <span class="kicker">Deployment, security and compliance</span><h2>On-premise first, built for audit</h2>
+  <p class="sub">Design options from the product concept. The MVP in this repository is a single-process reference implementation; the topologies below are the target architecture.</p>
+  <div class="cards3">
+    <div class="tile"><div class="ic" style="background:#2457e6"><svg class="i"><use href="#i-building"/></svg></div><h3>Single centre, on-premise</h3><p>One GPU cluster in the centre's data centre, N+1 GPUs, hot standby for the orchestrator.</p></div>
+    <div class="tile"><div class="ic" style="background:#8b5cf6"><svg class="i"><use href="#i-globe"/></svg></div><h3>National, two sites</h3><p>Active-active clusters; calls fail over with the telephony; shared model registry.</p></div>
+    <div class="tile"><div class="ic" style="background:#0891b2"><svg class="i"><use href="#i-monitor"/></svg></div><h3>Hub and spoke</h3><p>A central GPU hub serves regional centres over a secure WAN, with local fallback to transcript-only mode.</p></div>
+    <div class="tile"><div class="ic" style="background:#16a34a"><svg class="i"><use href="#i-lock"/></svg></div><h3>Sovereign cloud</h3><p>In-country government cloud with dedicated GPUs, where the client's policy allows it.</p></div>
+  </div>
+  <div class="cards3" style="margin-top:16px">
+    <div class="tile"><h3>Security controls</h3><ul><li>No audio or text leaves the centre by default; optional AI services are opt-in and audited</li><li>TLS 1.3 and SRTP in transit, AES-256 at rest with HSM-backed keys (target)</li><li>Role- and attribute-based access, four-eyes approval for exports (target)</li><li>Immutable, signed audit log of every suggestion and decision (in MVP)</li><li>Hardened containers, signed images, versioned and signed models (target)</li></ul></div>
+    <div class="tile"><h3>Privacy and standards</h3><ul><li>Retention policies per data type with automatic deletion and legal hold (target)</li><li>Designed to align with UAE and KSA data-protection law, and GDPR for EU-adjacent markets</li><li>High-risk AI use case under the EU AI Act: human oversight, logging and documentation built in</li><li>Target management systems: ISO 27001, ISO 22301, ISO/IEC 42001, EENA and NENA guidance</li></ul><small style="color:var(--muted)">These are design intentions. No certification is claimed.</small></div>
+    <div class="tile"><h3>Graceful degradation</h3><ul><li>LLM tier down: transcription and extraction continue</li><li>Extraction down: transcript only</li><li>All AI down: the call-taker works exactly as today</li><li>Kill switch per feature, owned by the shift supervisor</li></ul></div>
+  </div>
+  <h3 style="margin:28px 0 8px">GPU sizing (planning estimates)</h3>
+  <p class="sub" style="margin-bottom:12px">Size by concurrent calls, not calls per day. All figures are estimates to be confirmed by a benchmark on the client's own audio during the proof of concept.</p>
+  <div class="tablewrap"><table><thead><tr><th>Centre size</th><th>Concurrent calls (peak)</th><th>Inference GPUs (N+1)</th><th>Training GPUs</th></tr></thead><tbody>
+    <tr><td>Small / city (pilot)</td><td>up to 20</td><td>2</td><td>shared with inference at night</td></tr>
+    <tr><td>Medium / regional</td><td>20–80</td><td>4–6</td><td>2</td></tr>
+    <tr><td>Large / national</td><td>80–300</td><td>8–16 across two sites</td><td>4–8</td></tr></tbody></table></div>
+</div></section>
+
+<section class="block" id="start"><div class="wrap">
+  <span class="kicker">Commercial options and next steps</span><h2>From proof of concept to production</h2>
+  <p class="sub">The first commercial step is a proof of concept that secures access to real call audio under a data agreement, because dialect accuracy depends on it.</p>
+  <div class="cards3">
+    <div class="tile"><h3>Commercial models (options)</h3><ul><li><b>Perpetual licence + support:</b> per call-taker position plus 18–22% annual support</li><li><b>Subscription:</b> per position per year, hardware separate</li><li><b>Managed service:</b> per position per month including GPUs and operations</li><li><b>Add-on module</b> inside a wider command-centre or smart-city bid</li></ul></div>
+    <div class="tile"><h3>Proof-of-concept plan</h3><ul><li>Validate with 2–3 emergency centres and one CAD vendor</li><li>Dialect benchmark: public Arabic data plus 50 hours of scripted role-play calls</li><li>Prototype streaming ASR and extraction on one GPU; measure latency end to end</li><li>Agree scope, success criteria and the data-agreement template</li></ul></div>
+    <div class="tile"><h3>Explore it yourself</h3><p>The repository includes the reference implementation, tests, the CCC simulation and this page.</p><div class="cta"><a class="btn primary" href="ccc.html"><svg class="i"><use href="#i-monitor"/></svg> CCC simulation</a><a class="btn" href="https://github.com/thirumald/emergency-copilot" target="_blank" rel="noopener"><svg class="i"><use href="#i-file"/></svg> Source on GitHub</a></div></div>
+  </div>
+  <h3 style="margin:28px 0 10px">Frequently asked</h3><div class="faq" id="faq"></div>
+</div></section>
+
+<section class="block alt" id="kpi"><div class="wrap">
+  <span class="kicker">Targets</span><h2>How success is measured</h2>
+  <p class="sub">Design goals for the business case. They must be baselined on the client's own call audio during the proof of concept; nothing here is a measured result.</p>
+  <div class="tablewrap"><table><thead><tr><th>Measure</th><th>MVP target</th><th>Production target</th></tr></thead><tbody>
+    <tr><td>Critical-cue recall (a missed cue is the worst error)</td><td>≥ 95%</td><td>≥ 99%</td></tr>
+    <tr><td>Incident type, top-1 accuracy</td><td>≥ 80%</td><td>≥ 92%</td></tr>
+    <tr><td>Location correct within 100 m (with handset location)</td><td>≥ 85%</td><td>≥ 95%</td></tr>
+    <tr><td>Word error rate, Gulf Arabic telephony</td><td>≤ 25%</td><td>≤ 15%</td></tr>
+    <tr><td>Speech to field on screen (p95)</td><td>≤ 1.5 s</td><td>≤ 0.8 s</td></tr>
+    <tr><td>Fields accepted by call-takers</td><td>≥ 60%</td><td>≥ 85%</td></tr>
+    <tr><td>Reduction in answer-to-dispatch time</td><td>10%</td><td>25–30%</td></tr>
+  </tbody></table></div>
+</div></section>
+
+<section class="block" id="roadmap"><div class="wrap">
+  <span class="kicker">Roadmap</span><h2>Three phases, two safety gates</h2><p class="sub">Each gate needs written sign-off from the operational safety board.</p>
+  <div class="phases">
+    <div class="phase"><small>PHASE 1 · MVP</small><h3>Assist the call-taker <span class="state">built</span></h3><ul><li>Transcript, dialect and code-switch detection</li><li>Incident type, cues, entities, severity with reasons</li><li>Location, regions, facilities and case record</li><li>SOP guidance, CAD pre-fill, audit, shadow mode</li></ul></div>
+    <div class="phase"><small>PHASE 2 · PRODUCTION</small><h3>Dispatch and scale <span class="state todo">planned</span></h3><ul><li>Unit recommendation and multi-agency routing</li><li>CCTV auto-open, text-to-112 and chat</li><li>Translation with synthetic voice, duplicate and hoax detection</li><li>Major-incident mode, QA scoring of every call</li></ul></div>
+    <div class="phase"><small>PHASE 3 · ADVANCED</small><h3>Fuse and train <span class="state todo">planned</span></h3><ul><li>ANPR, IoT and acoustic sensor correlation</li><li>Whisper capture, eCall, sign-language relay</li><li>AI first response for queued callers</li><li>Training simulator with role-play callers</li></ul></div>
+  </div>
+</div></section>
+</main>
+
+<dialog id="dlg" aria-labelledby="dTitle"><div class="m-art" id="dArt"><button class="iconbtn" id="dClose" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div><div class="m-title"><h3 id="dTitle"></h3><small id="dMeta"></small></div>
+<div class="m-body" id="dBody"></div></dialog>
+
+<footer><div class="wrap"><div class="fgrid"><div><b>CCC Co-Pilot</b><br>AI Emergency Call Co-Pilot for Command and Control Centres. Human in the loop, on-premise first.</div><div><b>Explore</b><br><a href="#usecases">Use cases</a> · <a href="#demo">Live demo</a> · <a href="ccc.html">CCC simulation</a> · <a href="#integrations">Integrations</a></div><div><b>Project</b><br><a href="https://github.com/thirumald/emergency-copilot" target="_blank" rel="noopener">Source code</a> · <a href="https://github.com/thirumald/emergency-copilot/blob/main/README.md" target="_blank" rel="noopener">Documentation</a></div></div>Demo page for the AI Emergency Call Co-Pilot MVP. SOP text, incident taxonomy, gazetteer, facilities and hotline data are sample data with approximate coordinates and must be replaced with approved operational data before any live use. Roadmap items are plans, not delivered features. Icons, illustrations and audio clips are embedded in this file; the only thing loaded from the internet is the Google map.
+  <div class="by"><span class="av" aria-hidden="true">TD</span><span>Created by <b>Thirumal Dharmalingam</b> · © 2026</span></div></div></footer>
+
+<script>
+/*__ART__*/
+</script>
+<script>
+const D = /*__DATA__*/null;
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ico = (n, cls = "i") => `<svg class="${cls}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+
+/* ---------- theme ---------- */
+$("#theme").onclick = () => {
+  const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark";
+};
+
+/* ---------- use cases: five languages, scene art, filters, dialog ---------- */
+const UC = D.usecases, UIX = D.ui, CATS = D.cats;
+const CATSTYLE = { medical: ["--medical", "pulse"], fire: ["--fire", "flame"], traffic: ["--traffic", "car"], crime: ["--crime", "alert"], language: ["--language", "translate"], location: ["--location", "pin"],
+  assist: ["--assist", "headset"], governance: ["--governance", "shield"], supervisor: ["--supervisor", "monitor"], roadmap: ["--roadmap", "clock"] };
+const store = { get: (k) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+let lang = (new URLSearchParams(location.search).get("lang") || store.get("uc_lang") || "en"); if (!UIX[lang]) lang = "en";
+let cat = "all";
+const T = (u) => u.tr[lang], L = () => UIX[lang], catName = (c) => L().cats[CATS.indexOf(c)];
+document.getElementById("statUC").textContent = UC.length;
+
+function renderLang() {
+  $("#langbar").innerHTML = `<span class="lb">${esc(L().lang)}</span>` + Object.entries(UIX).map(([k, v]) => `<button type="button" data-l="${k}" lang="${k}" aria-pressed="${k === lang}">${esc(v.name)}</button>`).join("");
+  $("#langbar").querySelectorAll("button").forEach((b) => (b.onclick = () => { lang = b.dataset.l; store.set("uc_lang", lang); const u = new URL(location.href); u.searchParams.set("lang", lang); history.replaceState(null, "", u); renderAll(); }));
+  $("#ucKicker").textContent = L().kicker; $("#ucTitle").textContent = L().title; $("#ucSub").textContent = L().sub;
+  const n = $("#ucNote"); n.hidden = !L().note; n.textContent = L().note;
+  for (const id of ["ucKicker", "ucTitle", "ucSub", "ucNote"]) { const e = $("#" + id); e.dir = L().dir; e.lang = lang; }
+}
+function renderFilters() {
+  const counts = { all: UC.length }; UC.forEach((u) => (counts[u.cat] = (counts[u.cat] || 0) + 1));
+  $("#filters").dir = L().dir;
+  $("#filters").innerHTML = [["all", L().all, "list"], ...CATS.map((k) => [k, catName(k), CATSTYLE[k][1]])]
+    .map(([k, l, i]) => `<button class="chip" data-c="${k}" aria-pressed="${k === cat}">${ico(i)} ${esc(l)} <small>${counts[k] || 0}</small></button>`).join("");
+  $("#filters").querySelectorAll(".chip").forEach((b) => (b.onclick = () => { cat = b.dataset.c; renderFilters(); renderCards(); }));
+}
+function renderCards() {
+  const list = UC.filter((u) => cat === "all" || u.cat === cat), ui = L();
+  $("#grid").innerHTML = list.map((u) => { const t = T(u), [cv, ci] = CATSTYLE[u.cat], built = u.ph === "MVP";
+    return `<button class="card ${u.cat === "roadmap" ? "roadmap" : ""}" data-id="${u.id}" style="--cc:var(${cv})" aria-label="${esc(t.title)}" lang="${lang}" dir="${ui.dir}">
+      <div class="art">${ART.scene(u.scene, "c" + u.id.replace(/\W/g, ""))}<span class="cico">${ico(u.icon)}</span></div>
+      <div class="body"><div class="row"><span class="catline">${esc(catName(u.cat))}</span><span class="st ${built ? "" : "road"}"><i></i>${esc(built ? ui.built : ui.road + " · " + u.ph)}</span></div><h3>${esc(t.title)}</h3><p>${esc(t.sit)}</p>
+        <div class="foot"><span class="who">${ico("users")} ${esc(ui.roles[u.role])}</span><span class="more">${esc(built ? ui.seeBuilt : ui.seePlan)} ${ico("arrow")}</span></div></div></button>`; }).join("");
+  $("#empty").textContent = ui.empty; $("#empty").style.display = list.length ? "none" : "block";
+  $("#grid").querySelectorAll(".card").forEach((b) => (b.onclick = () => openUC(b.dataset.id)));
+}
+function openUC(id) {
+  const u = UC.find((x) => x.id === id), t = T(u), ui = L(), [cv] = CATSTYLE[u.cat], built = u.ph === "MVP";
+  $("#dArt").querySelectorAll("svg:not(.i)").forEach((e) => e.remove()); $("#dArt").insertAdjacentHTML("afterbegin", ART.scene(u.scene, "m" + u.id.replace(/\W/g, "")));
+  const dlg = $("#dlg"); dlg.style.setProperty("--cc", `var(${cv})`);
+  $("#dTitle").textContent = t.title; $("#dMeta").textContent = `${catName(u.cat)} · ${ui.roles[u.role]} · ${built ? ui.builtMeta : ui.roadMeta.replace("{ph}", u.ph)}`;
+  $(".m-title").dir = ui.dir; $("#dBody").dir = ui.dir; $(".m-title").lang = $("#dBody").lang = lang;
+  $("#dBody").innerHTML = `<div><h4>${esc(ui.situation)}</h4><p style="margin:0">${esc(t.sit)}</p></div>
+    <div><h4>${esc(built ? ui.does : ui.planned)}</h4><ul>${t.does.map((d) => `<li>${esc(d)}</li>`).join("")}</ul></div>
+    <div class="callout ${built ? "" : "warn"}"><b>${esc(ui.human)}.</b> ${esc(t.human)}</div>
+    ${u.sc ? `<div><button class="btn primary" id="dDemo" dir="ltr">${ico("play")} ${esc(ui.replay)}</button></div>` : ""}`;
+  if (u.sc) $("#dDemo").onclick = () => { dlg.close(); loadScenario(u.sc); $("#demo").scrollIntoView(); start(); };
+  dlg.showModal();
+}
+function renderAll() { renderLang(); renderFilters(); renderCards(); }
+$("#dClose").onclick = () => $("#dlg").close();
+$("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) $("#dlg").close(); });
+
+/* ---------- demo player (frames come from the real pipeline) ---------- */
+let sc = null, idx = 0, timer = null;
+const SC_IDS = Object.keys(D.scenarios);
+$("#scSel").innerHTML = SC_IDS.map((k) => `<option value="${k}">${esc(D.scenarios[k].title)}</option>`).join("");
+$("#scSel").onchange = (e) => loadScenario(e.target.value);
+function loadScenario(id) { stop(); sc = D.scenarios[id]; $("#scSel").value = id; idx = 0; draw(); }
+function hl(text, evid) {
+  const r = []; evid.filter(Boolean).forEach((e) => { const i = text.indexOf(e); if (i >= 0) r.push([i, i + e.length]); });
+  r.sort((a, b) => a[0] - b[0]); let o = "", p = 0;
+  r.forEach(([s, e]) => { if (s >= p) { o += esc(text.slice(p, s)) + "<mark>" + esc(text.slice(s, e)) + "</mark>"; p = e; } });
+  return o + esc(text.slice(p));
+}
+function draw() {
+  const shown = sc.frames.slice(0, idx), last = shown[shown.length - 1];
+  const allEv = last ? last.cues.map((c) => c.evidence) : [];
+  $("#tr").innerHTML = shown.map((f) => `<div class="msg ${f.speaker} ${f.lowq ? "lowq" : ""}" dir="auto"><small>${f.speaker}${f.lowq ? " · low audio quality, verify" : ""}</small>${hl(f.text, f.speaker === "calltaker" ? [] : allEv)}</div>`).join("");
+  $("#tr").scrollTop = 1e6;
+  $("#lang").textContent = last && last.lang !== "unknown" ? "· " + last.lang : "";
+  $("#cues").innerHTML = last ? last.cues.map((c) => `<span class="cue ${c.level}">${ico("alert")} ${esc(c.label)}</span>`).join("") : "";
+  const p = last ? last.priority : null;
+  $("#badge").textContent = p && last.fields.priority ? p.level : "–"; $("#badge").className = "badge " + (p && last.fields.priority ? p.level : "");
+  $("#reasons").textContent = p && last.fields.priority ? `Score ${p.score}: ` + p.reasons.join(" · ") : "Waiting for the first caller line…";
+  const order = ["incident_type", "priority", "region", "location", "address_detail", "persons", "ages", "injuries", "hazards"];
+  $("#fields").innerHTML = last ? order.filter((k) => last.fields[k]).map((k) => { const f = last.fields[k];
+    return `<div class="f"><span>${esc(f.label)}</span><div><b dir="auto">${esc(f.value)}</b><div class="bar"><i style="width:${Math.round(f.conf * 100)}%"></i></div></div><span>${Math.round(f.conf * 100)}%</span></div>`; }).join("") : "";
+  const nq = $("#nq"); nq.hidden = !(last && last.next);
+  if (last && last.next) nq.innerHTML = `<div class="kicker" style="font-size:11px">Next question</div><div dir="auto"><b>${esc(last.next.en)}</b></div><div dir="rtl" style="color:var(--muted)">${esc(last.next.ar)}</div>`;
+  const c = last && last.case;
+  $("#casemini").innerHTML = c && c.region ? `<b>${esc(c.number)}</b> · ${esc(c.region)}${c.area ? " · " + esc(c.area) : ""}<br>${c.agencies.map((a) => esc(a.name) + " " + esc(a.hotline || "")).join(" · ")}${c.facilities.length ? "<br>Nearest: " + c.facilities.map((f) => `${esc(f.name)} (${f.km} km)`).join("; ") : ""}` : (c ? `<b>${esc(c.number)}</b> · region pending` : "");
+  const done = idx >= sc.frames.length; $("#play span").textContent = timer ? "Pause" : done ? "Replay" : "Play";
+  $("#play svg use").setAttribute("href", timer ? "#i-pause" : "#i-play"); $("#next").disabled = done;
+}
+function step() { if (idx < sc.frames.length) { idx++; draw(); } if (idx >= sc.frames.length) stop(); }
+function start() { if (idx >= sc.frames.length) idx = 0; stop(); step(); if (idx < sc.frames.length) { timer = setInterval(step, 1700); draw(); } }
+function stop() { clearInterval(timer); timer = null; if (sc) draw(); }
+$("#play").onclick = () => (timer ? stop() : start());
+$("#next").onclick = () => { stop(); step(); };
+$("#reset").onclick = () => { stop(); idx = 0; draw(); };
+
+/* ---------- audio samples ---------- */
+$("#audGrid").innerHTML = D.audio.map((a) => {
+  const ok = a.incident !== "UNKNOWN", sup = a.id === "en" || a.id === "ar";
+  return `<article class="aud"><header><span class="ic">${ico("wave")}</span><div><h3>${esc(a.name)}${a.native !== a.name ? ` <span dir="auto" style="font-weight:600;color:var(--muted)">· ${esc(a.native)}</span>` : ""}</h3>
+    <small>${sup ? '<span class="st ok">Co-Pilot support: built</span>' : '<span class="st no">Co-Pilot support: planned</span>'}</small></div></header>
+    <audio controls preload="none" src="${a.src}" aria-label="${esc(a.name)} sample call"></audio>
+    <blockquote dir="${a.dir}" lang="${a.id}">${esc(a.text)}</blockquote>
+    <div class="res"><span>Extracted by the current code:</span>
+      <span><b>Incident:</b> ${ok ? esc(a.incident) + " (" + Math.round(a.conf * 100) + "%)" : "not detected"}</span>
+      <span><b>Alerts:</b> ${a.cues.length ? esc(a.cues.join(", ")) : "none"}</span>
+      <span><b>Location:</b> ${a.location ? esc(a.location) : "not matched"}</span></div></article>`;
+}).join("");
+
+/* ---------- Google map (embed, no API key) ---------- */
+(function gmap() {
+  const opts = [["Regions", D.regions.map((r) => [r.name, r.lat, r.lon, r.zoom])],
+    ["Demo cases", Object.values(D.scenarios).filter((c) => c.pin).map((c) => [`${c.pin.name} (${c.title.split(" — ")[0]})`, c.pin.lat, c.pin.lon, 15])],
+    ["Hospitals", D.facilities.filter((f) => f.kind === "hospital").map((f) => [f.name, f.lat, f.lon, 16])],
+    ["Police", D.facilities.filter((f) => f.kind === "police").map((f) => [f.name, f.lat, f.lon, 16])],
+    ["Civil defence", D.facilities.filter((f) => f.kind === "civil_defence").map((f) => [f.name, f.lat, f.lon, 16])]];
+  const all = [];
+  $("#gSel").innerHTML = opts.map(([g, items]) => `<optgroup label="${g}">${items.map((it) => { all.push(it); return `<option value="${all.length - 1}">${esc(it[0])}</option>`; }).join("")}</optgroup>`).join("");
+  const KEY = /*__GMAPS_KEY__*/"";
+  let gm = null, gMarker = null;
+  function show(i) {
+    const [name, lat, lon, z] = all[i];
+    $("#gOpen").href = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+    if (gm) { gm.setCenter({ lat, lng: lon }); gm.setZoom(z); gMarker.position = { lat, lng: lon }; gMarker.title = name; return; }
+    $("#gFrame").src = `https://maps.google.com/maps?q=${lat},${lon}(${encodeURIComponent(name.replace(/[()]/g, ""))})&z=${z}&hl=en&output=embed`;  // keyless fallback
+  }
+  function loadGoogleJS() {
+    return new Promise((res, rej) => { window.__gmReady = res; window.gm_authFailure = () => rej(new Error("key rejected"));
+      const sc = document.createElement("script"); sc.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(KEY)}&v=weekly&loading=async&libraries=marker&callback=__gmReady`; sc.async = true; sc.onerror = () => rej(new Error("load failed"));
+      document.head.appendChild(sc); setTimeout(() => rej(new Error("timeout")), 10000); });
+  }
+  async function useGoogleJS() {
+    if (!KEY) return;
+    try { await loadGoogleJS(); const [, lat, lon, z] = all[+$("#gSel").value || 0];
+      gm = new google.maps.Map($("#gDiv"), { center: { lat, lng: lon }, zoom: z, mapId: "DEMO_MAP_ID", gestureHandling: "greedy" });
+      gMarker = new google.maps.marker.AdvancedMarkerElement({ map: gm, position: { lat, lng: lon } });
+      $("#gDiv").hidden = false; $("#gFrame").hidden = true; $("#gFrame").removeAttribute("src"); show(+$("#gSel").value || 0);
+      document.addEventListener("fullscreenchange", () => setTimeout(() => google.maps.event.trigger(gm, "resize"), 200));
+    } catch (e) { gm = null; }  // keep the keyless embed
+  }
+  $("#gSel").onchange = (e) => show(+e.target.value);
+  const box = document.querySelector(".gmap");
+  $("#gFull").onclick = () => (document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen && box.requestFullscreen());
+  document.addEventListener("fullscreenchange", () => ($("#gFull span").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen"));
+  show(0); useGoogleJS();
+})();
+
+/* ---------- Abu Dhabi schematic map ---------- */
+(function map() {
+  const W = 860, H = 500, X = (lon) => ((lon - 51.4) / 4.7) * W, Y = (lat) => ((25.1 - lat) / 2.55) * H;
+  const poly = (pts) => pts.map(([lo, la], i) => (i ? "L" : "M") + X(lo).toFixed(1) + " " + Y(la).toFixed(1)).join(" ") + "Z";
+  const Z = {
+    dhafra: [[51.6, 24.2], [52.7, 24.2], [53.45, 24.17], [53.95, 24.25], [53.95, 23.95], [55.3, 23.95], [55.3, 23.0], [55.8, 23.0], [55.2, 22.7], [52.0, 22.7]],
+    abudhabi: [[53.95, 24.25], [54.4, 24.55], [54.7, 24.5], [54.95, 24.85], [55.3, 24.75], [55.3, 23.95], [53.95, 23.95]],
+    alain: [[55.3, 24.75], [55.6, 24.5], [55.95, 24.25], [55.6, 23.9], [55.8, 23.0], [55.3, 23.0]],
+  };
+  const COL = { dhafra: "#f97316", abudhabi: "#3b82f6", alain: "#16a34a" }, NAME = { dhafra: "Al Dhafra Region", abudhabi: "Abu Dhabi Region", alain: "Al Ain Region" };
+  const LBL = { dhafra: [52.7, 23.35], abudhabi: [54.45, 24.15], alain: [55.58, 23.45] };
+  let s = `<rect width="860" height="500" rx="14" fill="var(--surface2)"/><g opacity=".5" stroke="var(--line)"><path d="M0 125h860M0 250h860M0 375h860M215 0v500M430 0v500M645 0v500"/></g>`;
+  s += `<text x="20" y="40" font-size="13" font-weight="700" fill="var(--muted)">Arabian Gulf</text>`;
+  for (const k of Object.keys(Z)) s += `<path d="${poly(Z[k])}" fill="${COL[k]}" fill-opacity=".16" stroke="${COL[k]}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  for (const k of Object.keys(LBL)) { const [a, ...b] = NAME[k].split(" Region"), x = X(LBL[k][0]), y = Y(LBL[k][1]);
+    s += `<text x="${x}" y="${y}" text-anchor="middle" font-size="15" font-weight="800" fill="${COL[k]}">${a}<tspan x="${x}" dy="17">Region</tspan></text>`; }
+  const FC = { hospital: "#22c55e", police: "#0ea5e9", civil_defence: "#eab308" };
+  D.places.forEach((p) => (s += `<circle cx="${X(p.lon)}" cy="${Y(p.lat)}" r="3" fill="var(--muted)" opacity=".7"><title>${esc(p.name)} · ${esc(p.name_ar)}</title></circle>`));
+  D.facilities.forEach((f) => (s += `<circle cx="${X(f.lon)}" cy="${Y(f.lat)}" r="5.5" fill="${FC[f.kind]}" stroke="#fff" stroke-width="1.4"><title>${esc(f.name)} (${f.kind.replace("_", " ")})</title></circle>`));
+  Object.values(D.scenarios).forEach((c) => { if (!c.aml) return; const a = c.aml;
+    s += `<circle class="pin" cx="${X(a.lon)}" cy="${Y(a.lat)}" r="13" fill="#ef4444" opacity=".35"/><circle cx="${X(a.lon)}" cy="${Y(a.lat)}" r="5" fill="#ef4444" stroke="#fff" stroke-width="1.6"><title>${esc(c.title)}</title></circle>`; });
+  s += `<g transform="translate(810 58)"><circle r="26" fill="var(--surface)" stroke="var(--line)"/><path d="M0 -18L6 4H-6Z" fill="var(--text)"/><text y="19" text-anchor="middle" font-size="11" font-weight="800" fill="var(--muted)">N</text></g>`;
+  s += `<text x="20" y="486" font-size="12" fill="var(--muted)">Schematic outline, not to scale. Demo coordinates.</text>`;
+  $("#map").innerHTML = s;
+})();
+
+$("#faq").innerHTML = D.help.slice(0, 10).map((h) => `<details><summary>${esc(h.q)}</summary><p>${esc(h.a)}</p></details>`).join("");
+renderAll(); loadScenario(SC_IDS.includes("en_cardiac") ? "en_cardiac" : SC_IDS[0]);
+</script>
+<!--__HELP__-->
+</body>
+</html>

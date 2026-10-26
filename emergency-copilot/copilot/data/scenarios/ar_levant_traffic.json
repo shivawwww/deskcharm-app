@@ -1,0 +1,29 @@
+{
+  "id": "ar_levant_traffic",
+  "title": "Levantine Arabic — road collision (no AML)",
+  "caller_number": "+971500000003",
+  "aml": null,
+  "turns": [
+    {
+      "speaker": "calltaker",
+      "text": "مركز الطوارئ، شو صار؟"
+    },
+    {
+      "speaker": "caller",
+      "text": "في حادث كتير قوي هلق على طريق المطار، سيارتين تصادموا وواحد عم ينزف"
+    },
+    {
+      "speaker": "caller",
+      "text": "في طفل بالسيارة عمره ٦ سنوات وما عم يرد علينا"
+    }
+  ],
+  "expected": {
+    "incident_type": "TRAFFIC",
+    "location": "Airport Road",
+    "cues": [
+      "child",
+      "heavy_bleeding"
+    ],
+    "region": "Abu Dhabi Region"
+  }
+}

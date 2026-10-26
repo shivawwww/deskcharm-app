@@ -1,0 +1,148 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Simulated CCTV scene renderer</title>
+<body style="margin:0;background:#000">
+<canvas id="c" width="640" height="360"></canvas>
+<script>
+/* Deterministic canvas renderer for the four simulated CCTV demo clips. window.renderFrame(scene, t, frame) draws one frame and
+   returns it as base64 JPEG. Everything is drawn from shapes: these are NOT real recordings. */
+const W = 640, H = 360, c = document.getElementById("c"), g = c.getContext("2d");
+const rng = (seed) => { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; };
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), lerp = (a, b, k) => a + (b - a) * k, ease = (k) => k * k * (3 - 2 * k), seg = (t, a, b) => clamp((t - a) / (b - a));
+const META = {
+  collision: { cam: "CAM-014", name: "SHEIKH ZAYED BIN SULTAN ST", start: [14, 2, 11] },
+  fire: { cam: "CAM-027", name: "MUSSAFAH INDUSTRIAL", start: [14, 17, 40] },
+  crime: { cam: "CAM-008", name: "AL KHALIDIYAH", start: [22, 41, 5] },
+  medical: { cam: "CAM-003", name: "HAMDAN ST", start: [9, 26, 52] },
+};
+
+/* ---- shared scenery */
+function backdrop(tint = 0) {
+  const sky = g.createLinearGradient(0, 0, 0, 235); sky.addColorStop(0, "#070d18"); sky.addColorStop(1, `rgb(${24 + tint},${40 + tint / 2},62)`); g.fillStyle = sky; g.fillRect(0, 0, W, 235);
+  const r = rng(5); let x = -10;
+  while (x < W) { const w = 38 + r() * 50, h = 60 + r() * 120; g.fillStyle = `hsl(215 ${25 + r() * 10}% ${9 + r() * 5}%)`; g.fillRect(x, 235 - h, w, h);
+    for (let yy = 235 - h + 8; yy < 228; yy += 13) for (let xx = x + 6; xx < x + w - 8; xx += 11) if (r() > .66) { g.fillStyle = r() > .3 ? "#e9c46a" : "#9bb7d4"; g.globalAlpha = .55 + r() * .3; g.fillRect(xx, yy, 5, 6); g.globalAlpha = 1; }
+    x += w + 3; }
+  g.fillStyle = "#18222f"; g.fillRect(0, 214, W, 22);                                                           // sidewalk
+  const road = g.createLinearGradient(0, 236, 0, H); road.addColorStop(0, "#161d28"); road.addColorStop(1, "#0a0e15"); g.fillStyle = road; g.fillRect(0, 236, W, H - 236);
+  g.fillStyle = "rgba(220,230,240,.5)"; for (let i = 0; i < 9; i++) g.fillRect(i * 80 + 12, 300, 44, 3);          // lane dashes
+  g.fillStyle = "rgba(255,255,255,.25)"; g.fillRect(0, 236, W, 2);
+}
+function glow(x, y, rad, col, a = 1) { g.save(); g.globalCompositeOperation = "lighter"; const gr = g.createRadialGradient(x, y, 0, x, y, rad); gr.addColorStop(0, col.replace("A", a)); gr.addColorStop(1, col.replace("A", 0)); g.fillStyle = gr; g.fillRect(x - rad, y - rad, rad * 2, rad * 2); g.restore(); }
+function lamp(x) { g.strokeStyle = "#2a3a4f"; g.lineWidth = 3; g.beginPath(); g.moveTo(x, 232); g.lineTo(x, 120); g.lineTo(x + 18, 116); g.stroke(); glow(x + 20, 120, 70, "rgba(255,226,150,A)", .55); g.fillStyle = "#fff4cf"; g.fillRect(x + 15, 115, 10, 4); }
+function car(x, y, w, col, dir = 1, rot = 0, lights = true) {
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(dir, 1); const h = w * .34;
+  g.fillStyle = "rgba(0,0,0,.45)"; g.beginPath(); g.ellipse(0, 3, w * .55, 5, 0, 0, 7); g.fill();
+  g.fillStyle = col; g.beginPath(); g.roundRect(-w / 2, -h, w, h * .72, 6); g.fill();
+  g.fillStyle = shade(col, -18); g.beginPath(); g.moveTo(-w * .26, -h); g.lineTo(-w * .14, -h * 1.5); g.lineTo(w * .2, -h * 1.5); g.lineTo(w * .32, -h); g.closePath(); g.fill();
+  g.fillStyle = "rgba(170,205,235,.75)"; g.beginPath(); g.moveTo(-w * .2, -h * 1.02); g.lineTo(-w * .11, -h * 1.42); g.lineTo(w * .17, -h * 1.42); g.lineTo(w * .26, -h * 1.02); g.closePath(); g.fill();
+  g.fillStyle = "#06090e"; for (const wx of [-w * .3, w * .3]) { g.beginPath(); g.arc(wx, -2, h * .26, 0, 7); g.fill(); g.fillStyle = "#6c7a8c"; g.beginPath(); g.arc(wx, -2, h * .11, 0, 7); g.fill(); g.fillStyle = "#06090e"; }
+  if (lights) { g.fillStyle = "#fff3c4"; g.fillRect(w * .45, -h * .8, 5, 5); g.fillStyle = "#ff3b3b"; g.fillRect(-w / 2, -h * .8, 4, 5); }
+  g.restore(); if (lights) glow(x + dir * w * .62, y - h * .6, 38, "rgba(255,240,190,A)", .5);
+}
+function shade(hex, d) { const n = parseInt(hex.slice(1), 16), f = (v) => clamp(v + d, 0, 255) | 0; return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`; }
+function person(x, y, h, col, t, mode = "stand", dir = 1) {
+  g.save(); g.translate(x, y); g.scale(dir, 1); const s = h / 40, sw = Math.sin(t * 9) * (mode === "run" ? 9 : mode === "walk" ? 4 : 0);
+  g.fillStyle = "rgba(0,0,0,.4)"; g.beginPath(); g.ellipse(0, 1, 9 * s, 3 * s, 0, 0, 7); g.fill();
+  g.strokeStyle = shade(col, -25); g.lineWidth = 4 * s; g.lineCap = "round"; g.beginPath(); g.moveTo(0, -16 * s); g.lineTo(sw * s, 0); g.moveTo(0, -16 * s); g.lineTo(-sw * s, 0); g.stroke();
+  g.fillStyle = col; g.beginPath(); g.roundRect(-5 * s, -30 * s, 10 * s, 16 * s, 3 * s); g.fill();
+  g.strokeStyle = col; g.lineWidth = 3.4 * s; g.beginPath(); g.moveTo(0, -27 * s); g.lineTo((6 - sw / 2) * s, -17 * s); g.moveTo(0, -27 * s); g.lineTo((-6 + sw / 2) * s, -17 * s); g.stroke();
+  g.fillStyle = "#d9b08c"; g.beginPath(); g.arc(0, -35 * s, 5 * s, 0, 7); g.fill(); g.restore();
+}
+function flame(x, y, s, t, k = 1) {
+  if (k <= 0) return; for (let i = 0; i < 3; i++) { const f = Math.sin(t * (9 + i * 3) + i * 2) * .12 + 1, hgt = (46 - i * 11) * s * f * k, wd = (20 - i * 5) * s * k;
+    g.fillStyle = ["#f97316", "#fbbf24", "#fff3b0"][i]; g.beginPath(); g.moveTo(x - wd, y); g.quadraticCurveTo(x - wd * .9, y - hgt * .55, x + Math.sin(t * 7 + i) * 4 * s, y - hgt); g.quadraticCurveTo(x + wd * .9, y - hgt * .55, x + wd, y); g.closePath(); g.fill(); }
+  glow(x, y - 20 * s, 90 * s * k, "rgba(255,140,40,A)", .6);
+}
+function smoke(x, y, t, k, n = 44, spread = 70) {
+  const r = rng(77); for (let i = 0; i < n; i++) { const a = ((t * .22 + r()) % 1), px = x + (r() - .5) * 20 + a * spread * (r() > .5 ? 1 : .6) + Math.sin(a * 6 + i) * 8, py = y - a * 190, rad = 8 + a * 38;
+    g.fillStyle = `rgba(${70 + a * 40},${74 + a * 40},${82 + a * 40},${(1 - a) * .32 * k})`; g.beginPath(); g.arc(px, py, rad, 0, 7); g.fill(); }
+}
+function beacon(x, y, t, size = 1) { const on = Math.floor(t * 5) % 2; glow(x - 6 * size, y, 60 * size, on ? "rgba(255,40,40,A)" : "rgba(40,90,255,A)", .85); glow(x + 6 * size, y, 60 * size, on ? "rgba(40,90,255,A)" : "rgba(255,40,40,A)", .85); }
+function ambulance(x, t, dir = 1, y = 296) {
+  g.save(); g.translate(x, y); g.scale(dir, 1);
+  g.fillStyle = "rgba(0,0,0,.45)"; g.beginPath(); g.ellipse(0, 3, 62, 6, 0, 0, 7); g.fill();
+  g.fillStyle = "#e9eef5"; g.beginPath(); g.roundRect(-58, -48, 84, 46, 6); g.fill(); g.beginPath(); g.moveTo(26, -48); g.lineTo(46, -48); g.lineTo(60, -26); g.lineTo(60, -2); g.lineTo(26, -2); g.closePath(); g.fill();
+  g.fillStyle = "#9fc7ee"; g.beginPath(); g.moveTo(31, -43); g.lineTo(44, -43); g.lineTo(55, -27); g.lineTo(31, -27); g.closePath(); g.fill();
+  g.fillStyle = "#d62828"; g.fillRect(-58, -22, 118, 5); g.fillRect(-36, -42, 5, 18); g.fillRect(-42.5, -35.5, 18, 5);
+  g.fillStyle = "#06090e"; for (const wx of [-34, 38]) { g.beginPath(); g.arc(wx, -2, 9, 0, 7); g.fill(); g.fillStyle = "#6c7a8c"; g.beginPath(); g.arc(wx, -2, 4, 0, 7); g.fill(); g.fillStyle = "#06090e"; }
+  g.restore(); beacon(x - dir * 6, y - 52, t); glow(x + dir * 70, y - 24, 50, "rgba(255,245,200,A)", .5);
+}
+function truck(x, t, dir = 1, y = 298) {
+  g.save(); g.translate(x, y); g.scale(dir, 1); g.fillStyle = "rgba(0,0,0,.45)"; g.beginPath(); g.ellipse(0, 3, 74, 6, 0, 0, 7); g.fill();
+  g.fillStyle = "#c1121f"; g.beginPath(); g.roundRect(-70, -50, 96, 48, 5); g.fill(); g.fillStyle = "#e5383b"; g.beginPath(); g.moveTo(26, -50); g.lineTo(48, -50); g.lineTo(66, -26); g.lineTo(66, -2); g.lineTo(26, -2); g.closePath(); g.fill();
+  g.fillStyle = "#9fc7ee"; g.beginPath(); g.moveTo(31, -45); g.lineTo(46, -45); g.lineTo(60, -27); g.lineTo(31, -27); g.closePath(); g.fill(); g.fillStyle = "#ffd166"; g.fillRect(-70, -22, 136, 4);
+  g.strokeStyle = "#d9dee5"; g.lineWidth = 4; g.beginPath(); g.moveTo(-60, -52); g.lineTo(10, -78); g.stroke();
+  g.fillStyle = "#06090e"; for (const wx of [-44, 40]) { g.beginPath(); g.arc(wx, -2, 10, 0, 7); g.fill(); g.fillStyle = "#6c7a8c"; g.beginPath(); g.arc(wx, -2, 4.5, 0, 7); g.fill(); g.fillStyle = "#06090e"; }
+  g.restore(); beacon(x + dir * 30, y - 54, t, 1.2); glow(x + dir * 78, y - 24, 55, "rgba(255,245,200,A)", .5);
+}
+function policeCar(x, t, dir = 1, y = 298) { car(x, y, 112, "#e8edf3", dir, 0, true); g.fillStyle = "#1d4ed8"; g.fillRect(x - 56, y - 22, 112, 6); beacon(x, y - 52, t); }
+function sparks(x, y, t0, t, n = 26) { const r = rng(9); for (let i = 0; i < n; i++) { const a = r() * 6.28, v = 40 + r() * 120, tt = t - t0; if (tt < 0 || tt > 1.1) continue; const px = x + Math.cos(a) * v * tt, py = y + Math.sin(a) * v * tt * .7 + 90 * tt * tt;
+  g.fillStyle = `rgba(255,${180 + r() * 60 | 0},80,${1 - tt / 1.1})`; g.fillRect(px, py, 2.4, 2.4); } }
+
+/* ---- scenes */
+const SCENES = {
+  collision(t) {
+    backdrop(); [90, 330, 560].forEach(lamp);
+    const hit = 4.2, xa = t < hit ? lerp(-120, 296, ease(clamp(t / hit))) : 296 - ease(seg(t, hit, hit + .6)) * 14, xb = t < hit ? lerp(780, 352, ease(clamp(t / hit))) : 352 + ease(seg(t, hit, hit + .6)) * 20;
+    const rotA = t < hit ? 0 : -ease(seg(t, hit, hit + .5)) * .13, rotB = t < hit ? 0 : ease(seg(t, hit, hit + .5)) * .17;
+    car(xa, 292, 118, "#3b82f6", 1, rotA, t < hit + 3 || Math.floor(t * 3) % 2); car(xb, 292, 124, "#f59e0b", -1, rotB, t < hit + 3 || Math.floor(t * 3) % 2);
+    if (t > hit) { glow(324, 270, 90 * (1 - seg(t, hit, hit + .5)) + 20, "rgba(255,255,255,A)", .9 * (1 - seg(t, hit, hit + .5))); sparks(324, 268, hit, t); smoke(360, 262, t, seg(t, hit + .5, hit + 2) * .8, 26, 40); }
+    if (t > hit + 1) { const k = Math.floor(t * 2.6) % 2; glow(xa - 58, 276, 26, "rgba(255,170,0,A)", k * .9); glow(xb + 62, 276, 26, "rgba(255,170,0,A)", k * .9); }
+    if (t > 6) { const k = ease(seg(t, 6, 8.4)); person(lerp(620, 410, k), 296, 34, "#fbbf24", t, k < 1 ? "run" : "stand", -1); person(lerp(660, 440, ease(seg(t, 6.6, 9))), 298, 32, "#9ca3af", t, "run", -1); }
+    if (t > 8.2) ambulance(lerp(-140, 150, ease(seg(t, 8.2, 11.4))), t);
+  },
+  fire(t) {
+    backdrop(10); lamp(70); lamp(580);
+    g.fillStyle = "#1c2a3d"; g.fillRect(170, 36, 290, 198); g.fillStyle = "#223249"; g.fillRect(170, 36, 290, 10);
+    for (let r = 0; r < 5; r++) for (let cc = 0; cc < 7; cc++) { const wx = 186 + cc * 39, wy = 56 + r * 33, burning = (r === 2 || r === 3) && cc > 1 && cc < 6, k = burning ? clamp(seg(t, .4 + cc * .15, 2.5)) * (1 - seg(t, 9, 11.8) * .9) : 0;
+      g.fillStyle = burning ? `rgb(${60 + 190 * k},${54 + 90 * k},${50})` : (((r * 7 + cc) % 4) === 0 ? "#e9c46a" : "#101a28"); g.globalAlpha = burning ? 1 : .85; g.fillRect(wx, wy, 24, 22); g.globalAlpha = 1; if (k > 0.2) flame(wx + 12, wy + 22, .7 + k * .3, t + cc, k); }
+    g.fillStyle = "#0e1622"; g.fillRect(296, 196, 36, 38);
+    smoke(300, 90, t, seg(t, .8, 3) * (1 - seg(t, 10, 12) * .5), 56, 110);
+    [[2.0, 330, -1], [3.1, 320, -1], [4.2, 312, -1]].forEach(([t0, x0, d], i) => { const k = seg(t, t0, t0 + 3.4); if (k > 0 && k < 1) person(lerp(x0, 100 + i * 40, ease(k)), 236 + i * 14, 32, ["#fbbf24", "#a3e635", "#f87171"][i], t, "run", d); else if (k >= 1) person(100 + i * 40, 236 + i * 14, 32, ["#fbbf24", "#a3e635", "#f87171"][i], t, "stand"); });
+    if (t > 5) { const k = ease(seg(t, 5, 8)); truck(lerp(780, 540, k), t, -1); }
+    if (t > 8.2) { g.strokeStyle = "rgba(190,225,255,.85)"; g.lineWidth = 3.4; g.beginPath(); for (let i = 0; i <= 30; i++) { const u = i / 30, px = lerp(470, 396, u), py = lerp(222, 140, u) - Math.sin(u * Math.PI) * 38 + Math.sin(t * 20 + i) * .8; i ? g.lineTo(px, py) : g.moveTo(px, py); } g.stroke();
+      g.fillStyle = "rgba(200,230,255,.5)"; for (let i = 0; i < 14; i++) g.fillRect(380 + Math.sin(t * 13 + i * 2) * 20, 120 + ((t * 120 + i * 17) % 60), 2, 3); }
+  },
+  crime(t) {
+    backdrop(-4); lamp(60); lamp(380);
+    g.fillStyle = "#1a2536"; g.fillRect(40, 130, 210, 106); g.fillStyle = "#0b121d"; g.fillRect(56, 150, 90, 86); g.fillStyle = "#7fb7ff"; g.globalAlpha = .18; g.fillRect(160, 150, 74, 60); g.globalAlpha = 1;
+    const on = Math.floor(t * 2.2) % 5 !== 0; if (on) glow(100, 128, 60, "rgba(255,60,120,A)", .55); g.fillStyle = on ? "#ff4d8d" : "#5b1c36"; g.fillRect(70, 120, 60, 12);
+    const sx = t < 1.2 ? 100 : lerp(100, 700, ease(seg(t, 1.2, 8.5))); if (sx < 690) person(sx, 232 + Math.sin(t) * 2, 36, "#5b7bb0", t, t < 1.2 ? "stand" : "run", 1);
+    person(230, 238, 32, "#9ca3af", t, "stand", -1);
+    if (t > 3.2) policeCar(lerp(-130, 330, ease(seg(t, 3.2, 6.2))), t, 1);
+    if (t > 6.4) { const k = ease(seg(t, 6.4, 8.8)); person(lerp(330, 560, k) + 30, 270, 36, "#1e3a8a", t, "run", 1); person(lerp(330, 500, k) + 10, 276, 36, "#1e3a8a", t, "run", 1); }
+    if (t > 5.2) { const kk = Math.floor(t * 5) % 2; g.fillStyle = kk ? "rgba(255,40,40,.07)" : "rgba(40,90,255,.07)"; g.fillRect(0, 0, W, H); }
+  },
+  medical(t) {
+    backdrop(6); lamp(40); lamp(470);
+    g.fillStyle = "#1c2a3d"; g.fillRect(300, 70, 250, 166); g.fillStyle = "#101a28"; g.fillRect(398, 160, 54, 76); g.fillStyle = "#e9c46a"; g.globalAlpha = .7; g.fillRect(316, 90, 28, 24); g.fillRect(360, 90, 28, 24); g.fillRect(470, 90, 28, 24); g.globalAlpha = 1;
+    g.fillStyle = "#3b4b66"; g.beginPath(); g.roundRect(236, 246, 54, 11, 5); g.fill(); g.fillStyle = "#d9b08c"; g.beginPath(); g.arc(228, 251, 6, 0, 7); g.fill();                  // patient lying down
+    const kneel = seg(t, .8, 1.8), bob = t > 1.8 && t < 10.5 ? Math.abs(Math.sin(t * 5.6)) * 5 : 0;
+    person(lerp(120, 262, ease(seg(t, .2, 1.6))), 250 + bob * .2, 34 - kneel * 6, "#fbbf24", t, t < 1.7 ? "run" : "stand", 1);
+    if (t > 1.8) { g.strokeStyle = "#fbbf24"; g.lineWidth = 3.2; g.beginPath(); g.moveTo(262, 232); g.lineTo(256, 246 + bob); g.stroke(); }
+    person(330, 262, 32, "#9ca3af", t, "stand", -1); person(360, 266, 30, "#60a5fa", t, "stand", -1);
+    if (t > 4.6) ambulance(lerp(-140, 112, ease(seg(t, 4.6, 7.4))), t);
+    if (t > 7.8) { const k = ease(seg(t, 7.8, 9.8)); person(lerp(150, 240, k), 270, 36, "#16a34a", t, k < 1 ? "run" : "stand", 1); person(lerp(130, 214, k), 276, 36, "#16a34a", t, k < 1 ? "run" : "stand", 1);
+      g.fillStyle = "#cbd5e1"; g.fillRect(lerp(160, 244, k) - 22, 262, 44, 5); g.fillStyle = "#06090e"; g.beginPath(); g.arc(lerp(160, 244, k) - 14, 270, 4, 0, 7); g.arc(lerp(160, 244, k) + 14, 270, 4, 0, 7); g.fill(); }
+  },
+};
+
+/* ---- CCTV treatment + overlay */
+function cctv(name, t, frame) {
+  const m = META[name], r = rng(frame * 7919 + 13);
+  g.save(); g.globalCompositeOperation = "multiply"; g.fillStyle = "rgb(205,228,222)"; g.fillRect(0, 0, W, H); g.restore();                  // cool CCTV colour cast
+  g.fillStyle = "rgba(0,0,0,.16)"; for (let y = 0; y < H; y += 3) g.fillRect(0, y, W, 1);                                                      // scanlines
+  for (let i = 0; i < 260; i++) { g.fillStyle = `rgba(255,255,255,${r() * .09})`; g.fillRect(r() * W, r() * H, 1.4, 1.4); }                 // sensor noise
+  const v = g.createRadialGradient(W / 2, H / 2, H * .35, W / 2, H / 2, W * .66); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,.55)"); g.fillStyle = v; g.fillRect(0, 0, W, H);
+  if (frame % 97 > 93) { g.fillStyle = "rgba(255,255,255,.07)"; g.fillRect(0, r() * H, W, 5); }                                                // occasional glitch band
+  g.font = "700 13px ui-monospace,Menlo,Consolas,monospace"; const pad = (n) => String(n).padStart(2, "0"), sec = m.start[2] + Math.floor(t), ts = `2026-10-26  ${pad((m.start[0] + Math.floor((m.start[1] * 60 + sec) / 3600)) % 24)}:${pad(Math.floor(((m.start[1] * 60 + sec) % 3600) / 60))}:${pad(sec % 60)}`;
+  g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(10, 10, 14 + g.measureText(`${m.cam}  ${m.name}`).width, 22); g.fillRect(10, H - 32, 14 + g.measureText(ts).width, 22);
+  g.fillStyle = "#e8f1ff"; g.fillText(`${m.cam}  ${m.name}`, 17, 26); g.fillText(ts, 17, H - 16);
+  if (Math.floor(t * 1.6) % 2 === 0) { g.fillStyle = "#ef4444"; g.beginPath(); g.arc(W - 74, 21, 5.5, 0, 7); g.fill(); } g.fillStyle = "#e8f1ff"; g.fillText("REC", W - 62, 26);
+  g.font = "700 11px system-ui,sans-serif"; const lab = "SIMULATED CLIP · NOT REAL FOOTAGE", lw = g.measureText(lab).width; g.fillStyle = "rgba(245,158,11,.92)"; g.fillRect(W - lw - 26, H - 32, lw + 16, 22); g.fillStyle = "#1a1203"; g.fillText(lab, W - lw - 18, H - 17);
+}
+window.META = META; window.SCENE_NAMES = Object.keys(SCENES);
+window.renderFrame = (name, t, frame) => { g.clearRect(0, 0, W, H); SCENES[name](t); cctv(name, t, frame); return c.toDataURL("image/jpeg", 0.86).slice(23); };
+</script>
+</body>

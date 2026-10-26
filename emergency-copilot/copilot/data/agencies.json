@@ -1,0 +1,21 @@
+{
+ "_note": "DEMO DATA. Approximate coordinates; replace with the client's authoritative facility register.",
+ "agencies": {
+  "Police": {
+   "hotline": "999",
+   "facility": "police"
+  },
+  "Traffic Police": {
+   "hotline": "999",
+   "facility": "police"
+  },
+  "Ambulance": {
+   "hotline": "998",
+   "facility": "hospital"
+  },
+  "Civil Defence": {
+   "hotline": "997",
+   "facility": "civil_defence"
+  }
+ }
+}

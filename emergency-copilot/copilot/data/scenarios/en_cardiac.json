@@ -1,0 +1,49 @@
+{
+  "id": "en_cardiac",
+  "title": "English — cardiac arrest at home",
+  "caller_number": "+971500000001",
+  "aml": {
+    "lat": 24.4883,
+    "lon": 54.3664,
+    "accuracy_m": 40
+  },
+  "turns": [
+    {
+      "speaker": "calltaker",
+      "text": "Emergency services, what is the address of your emergency?"
+    },
+    {
+      "speaker": "caller",
+      "text": "Please hurry, my father collapsed and he is not breathing"
+    },
+    {
+      "speaker": "caller",
+      "text": "We are on Hamdan Street, building 14, second floor"
+    },
+    {
+      "speaker": "calltaker",
+      "text": "Stay on the line. How old is he?"
+    },
+    {
+      "speaker": "caller",
+      "text": "He is sixty eight years old. He had chest pain and then fell, he is unconscious"
+    },
+    {
+      "speaker": "calltaker",
+      "text": "Is anyone else hurt?"
+    },
+    {
+      "speaker": "caller",
+      "text": "No, just him. There are two of us here, me and my mother"
+    }
+  ],
+  "expected": {
+    "incident_type": "MEDICAL",
+    "location": "Hamdan Street",
+    "cues": [
+      "not_breathing",
+      "unconscious"
+    ],
+    "region": "Abu Dhabi Region"
+  }
+}

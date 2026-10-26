@@ -1,0 +1,4 @@
+{
+ "_note": "Default Google Maps JavaScript API key. It is visible to every visitor of the pages and the app, so it must be restricted in Google Cloud Console to this site's HTTP referrers and to the Maps JavaScript API. Override with COPILOT_GOOGLE_MAPS_KEY (empty string disables Google Maps in the app).",
+ "google_maps_key": "AIzaSyDlXdILIUd5vPkDda7coYSgSS1txWcYLog"
+}

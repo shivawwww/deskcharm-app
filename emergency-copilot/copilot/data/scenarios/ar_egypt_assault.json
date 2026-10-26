@@ -1,0 +1,34 @@
+{
+  "id": "ar_egypt_assault",
+  "title": "Egyptian Arabic — knife attack, noisy line",
+  "caller_number": "+971500000004",
+  "aml": {
+    "lat": 24.3475,
+    "lon": 54.4985,
+    "accuracy_m": 300
+  },
+  "turns": [
+    {
+      "speaker": "calltaker",
+      "text": "الطوارئ، ايه اللي حصل؟"
+    },
+    {
+      "speaker": "caller",
+      "text": "الحقني فيه واحد معاه سكينة بيهاجم الناس في مصفح قدام المحل ده",
+      "confidence": 0.62
+    },
+    {
+      "speaker": "caller",
+      "text": "واحد اتصاب وبينزف وهو لسه موجود هنا"
+    }
+  ],
+  "expected": {
+    "incident_type": "CRIME",
+    "location": "Mussafah",
+    "cues": [
+      "weapon",
+      "heavy_bleeding"
+    ],
+    "region": "Abu Dhabi Region"
+  }
+}

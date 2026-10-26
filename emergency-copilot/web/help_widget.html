@@ -1,0 +1,71 @@
+<!-- AI agent widget. Default: keyword search over the project's help answers (no AI, nothing sent anywhere).
+     Optional: if a LOCAL model (Ollama) is running on this computer, answers come from it; the question goes only to localhost. -->
+<style>
+#hlpBtn{position:fixed;right:16px;bottom:16px;z-index:90;width:56px;height:56px;border:0;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2457e6,#8b5cf6);color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#hlpBtn:hover{transform:scale(1.06)}#hlpBtn svg{width:30px;height:30px}#hlpBtn .dot{position:absolute;right:6px;top:6px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2px solid #fff;display:none}#hlpBtn.local .dot{display:block}
+#hlpPanel{position:fixed;right:16px;bottom:16px;z-index:91;width:min(400px,calc(100vw - 32px));max-height:min(580px,calc(100vh - 32px));display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:16px;background:var(--surface,var(--panel,#fff));color:var(--text,#14202e);border:1px solid var(--line,#dbe2ea);box-shadow:0 16px 48px rgba(0,0,0,.4);font:14px/1.45 system-ui,sans-serif}
+#hlpPanel[hidden]{display:none}#hlpPanel header{display:flex;align-items:center;gap:8px}#hlpPanel header svg{width:22px;height:22px;color:#8b5cf6}#hlpPanel header b{flex:1}
+#hlpPanel button,#hlpPanel input,#hlpPanel select{font:inherit;color:inherit;background:var(--surface2,var(--panel2,#eef2f7));border:1px solid var(--line,#dbe2ea);border-radius:8px;padding:6px 10px}
+#hlpPanel button{cursor:pointer}#hlpOut{overflow:auto;display:grid;gap:8px;min-height:60px}.hlpA{padding:8px 10px;border-radius:10px;border:1px solid var(--line,#dbe2ea);white-space:pre-wrap}.hlpA b{display:block}.hlpA.ai{border-color:#8b5cf6}.hlpA small{display:block;color:var(--muted,#5a6b7d);margin-top:4px}
+#hlpSug{display:flex;flex-wrap:wrap;gap:4px}#hlpSug button{font-size:12px;padding:3px 8px}#hlpPanel small,#hlpPanel details{color:var(--muted,#5a6b7d);font-size:12.5px}
+#hlpMode{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--surface2,#eef2f7)}#hlpMode.ai{background:#22c55e;color:#06240f}
+#hlpPanel details input,#hlpPanel details select{width:100%;margin:4px 0}#hlpPanel pre{margin:6px 0 0;padding:6px 8px;border-radius:8px;background:var(--surface2,#eef2f7);overflow:auto;font-size:12px;white-space:pre-wrap}
+</style>
+<button id="hlpBtn" type="button" aria-label="Open AI agent" title="AI agent">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="11" rx="3.5"/><path d="M12 8V5"/><circle cx="12" cy="3.6" r="1.1"/><circle cx="9" cy="13" r="1.2" fill="currentColor"/><circle cx="15" cy="13" r="1.2" fill="currentColor"/><path d="M9.5 16.2h5M2 12.5v2.5M22 12.5v2.5"/><path d="M19 2.2l.6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5-1.5-.6 1.5-.6z" fill="currentColor" stroke="none"/></svg><span class="dot"></span></button>
+<aside id="hlpPanel" hidden aria-label="AI agent">
+  <header><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="11" rx="3.5"/><path d="M12 8V5"/><circle cx="9" cy="13" r="1.2" fill="currentColor"/><circle cx="15" cy="13" r="1.2" fill="currentColor"/><path d="M9.5 16.2h5"/></svg><b>AI agent</b><span id="hlpMode">keyword help</span><button id="hlpX" type="button" aria-label="Close AI agent">×</button></header>
+  <small id="hlpNote">Read-only helper. It explains the system and cannot dispatch or change anything. Not medical advice.</small>
+  <form id="hlpForm" style="display:flex;gap:6px"><input id="hlpQ" style="flex:1" placeholder="Ask, e.g. what is shadow mode?" autocomplete="off"><button>Ask</button></form>
+  <div id="hlpSug"></div><div id="hlpOut" aria-live="polite"></div>
+  <details><summary>Local AI (runs on your computer)</summary>
+    <label>Ollama address<input id="hlpEp" value="http://localhost:11434"></label>
+    <label>Model<select id="hlpModel"></select></label><button id="hlpDetect" type="button">Detect local model</button>
+    <div>Install <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a>, then run:<pre>ollama pull llama3.1
+OLLAMA_ORIGINS="*" ollama serve</pre>The page sends your question only to this address. Some browsers (Safari) block web pages from reaching localhost.</div></details>
+</aside>
+<script>
+(function () {
+  const H = D.help, STOP = new Set("the a an is are how do does i to of and what it in my can for on be or".split(" "));
+  const $h = (id) => document.getElementById(id), store = { get: (k) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+  const tok = (s) => new Set((s.toLowerCase().match(/[a-z0-9']+/g) || []).filter((t) => !STOP.has(t) && t.length > 1));
+  const inter = (a, b) => { let n = 0; a.forEach((x) => b.has(x) && n++); return n; };
+  function search(q, n = 3) { const qt = tok(q); return H.map((e) => { const kw = new Set(); e.keywords.forEach((k) => tok(k).forEach((w) => kw.add(w)));
+    return [3 * inter(qt, kw) + 2 * inter(qt, tok(e.q)) + inter(qt, tok(e.a)), e]; }).filter((x) => x[0] > 0).sort((a, b) => b[0] - a[0]).slice(0, n).map((x) => x[1]); }
+  const out = $h("hlpOut"), local = { ok: false, model: "" };
+  const card = (title, text, cls, note) => { const d = document.createElement("div"); d.className = "hlpA " + (cls || ""); if (title) { const b = document.createElement("b"); b.textContent = title; d.appendChild(b); } d.appendChild(document.createTextNode(text));
+    if (note) { const s = document.createElement("small"); s.textContent = note; d.appendChild(s); } return d; };
+  function keyword(q) { const r = search(q); if (!r.length) { out.appendChild(card("", "No matching help topic. Try other words, for example: priority, alerts, shadow mode, languages, simulation.")); return; } r.forEach((e) => out.appendChild(card(e.q, e.a))); }
+  const SYS = "You are the AI agent for the AI Emergency Call Co-Pilot demo pages. You are read-only: you cannot dispatch, change records or contact anyone. Give no medical, fire or police advice; point to the centre's approved protocol and the call-taker. Answer ONLY from the knowledge excerpts below; if they do not cover it, say you do not know. Be concise.";
+  async function ask(q) {
+    out.textContent = "";
+    if (!local.ok) { keyword(q); return; }
+    const wait = card("", "Thinking on your local model…", "ai"); out.appendChild(wait);
+    const ctx = search(q, 4).map((e) => `- ${e.q} ${e.a}`).join("\n") || "- (no matching excerpts)";
+    try {
+      const c = new AbortController(), t = setTimeout(() => c.abort(), 90000);
+      const r = await fetch($h("hlpEp").value.replace(/\/$/, "") + "/api/chat", { method: "POST", signal: c.signal, headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: local.model, stream: false, messages: [{ role: "system", content: SYS + "\n\nKnowledge excerpts:\n" + ctx }, { role: "user", content: q.slice(0, 1000) }] }) });
+      clearTimeout(t); if (!r.ok) throw new Error("HTTP " + r.status);
+      const j = await r.json(); wait.remove(); out.appendChild(card("", (j.message && j.message.content || "").trim() || "No answer.", "ai", "Local model: " + local.model + " · answered on your computer"));
+    } catch (e) { wait.remove(); out.appendChild(card("", "The local model could not answer (" + (e.name === "AbortError" ? "timeout" : e.message) + "). Showing keyword help instead.")); keyword(q); }
+  }
+  function setMode(ok, label) { local.ok = ok; $h("hlpMode").textContent = label; $h("hlpMode").className = ok ? "ai" : ""; $h("hlpBtn").classList.toggle("local", ok); }
+  async function detect(announce) {
+    const ep = $h("hlpEp").value.replace(/\/$/, ""); store.set("hlp_ep", ep);
+    try { const c = new AbortController(), t = setTimeout(() => c.abort(), 2500); const r = await fetch(ep + "/api/tags", { signal: c.signal }); clearTimeout(t);
+      const names = ((await r.json()).models || []).map((m) => m.name); if (!names.length) throw new Error("no models installed");
+      const sel = $h("hlpModel"); sel.textContent = ""; names.forEach((n) => { const o = document.createElement("option"); o.value = o.textContent = n; sel.appendChild(o); });
+      const pref = ["llama3.1", "qwen2.5", "mistral", "llama3.2", "gemma"], pick = store.get("hlp_model") && names.includes(store.get("hlp_model")) ? store.get("hlp_model") : (pref.map((p) => names.find((n) => n.startsWith(p))).find(Boolean) || names[0]);
+      sel.value = pick; local.model = pick; setMode(true, "local AI · " + pick); if (announce) { out.textContent = ""; out.appendChild(card("", "Local AI detected: " + pick + ". Your questions now go to this model on your computer.", "ai")); }
+    } catch (e) { setMode(false, "keyword help"); if (announce) { out.textContent = ""; out.appendChild(card("", "No local model found at " + ep + " (" + e.message + "). Using keyword help. Start Ollama with OLLAMA_ORIGINS set, then press Detect again.")); } }
+  }
+  $h("hlpModel").onchange = (e) => { local.model = e.target.value; store.set("hlp_model", local.model); setMode(true, "local AI · " + local.model); };
+  $h("hlpDetect").onclick = () => detect(true);
+  const sug = $h("hlpSug"); ["What is shadow mode?", "Is dispatch real?", "Which languages are supported?", "Where does data go?"].forEach((q) => { const b = document.createElement("button"); b.type = "button"; b.textContent = q; b.onclick = () => { $h("hlpQ").value = q; ask(q); }; sug.appendChild(b); });
+  const open = (v) => { $h("hlpPanel").hidden = !v; $h("hlpBtn").hidden = v; if (v) { $h("hlpQ").focus(); detect(false); } };
+  $h("hlpEp").value = store.get("hlp_ep") || "http://localhost:11434";
+  $h("hlpBtn").onclick = () => open(true); $h("hlpX").onclick = () => open(false);
+  $h("hlpForm").onsubmit = (e) => { e.preventDefault(); const q = $h("hlpQ").value.trim(); if (q) ask(q); };
+})();
+</script>

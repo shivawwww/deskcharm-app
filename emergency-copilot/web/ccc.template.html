@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCC Full View Simulation</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--bg:#070d14;--panel:#0e1823;--panel2:#142130;--line:#1f3044;--text:#e6eef7;--muted:#8aa0b6;--brand:#5b8cff;
+--P1:#ef4444;--P2:#f97316;--P3:#eab308;--P4:#22c55e;--amb:#22c55e;--ptl:#38bdf8;--fire:#fb923c;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",sans-serif;overflow:hidden}
+svg.i{width:1.2em;height:1.2em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-.2em}
+button,select{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+button:hover{border-color:var(--brand)}button.on{background:var(--brand);border-color:var(--brand);color:#06101f;font-weight:700}button.warn{border-color:var(--warn);color:var(--warn)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.app{height:100vh;display:grid;grid-template-rows:auto auto 1fr 190px;gap:8px;padding:8px}
+.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}.brand .mk{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#ef4444,#f97316);display:grid;place-items:center}
+.sim{padding:2px 9px;border-radius:99px;background:#f59e0b22;border:1px solid var(--warn);color:var(--warn);font-size:12px;font-weight:800;letter-spacing:.04em}
+.clock{font:700 20px ui-monospace,Menlo,Consolas,monospace;margin-left:auto}
+.ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.ctl label{color:var(--muted);font-size:12px;display:flex;gap:4px;align-items:center}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 12px}.kpi b{font-size:22px;display:block;line-height:1.1}.kpi span{color:var(--muted);font-size:12px}
+.main{display:grid;grid-template-columns:310px minmax(300px,1fr) 440px;gap:8px;min-height:0}
+.col{display:flex;flex-direction:column;gap:8px;min-height:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.card>h2{margin:0;padding:8px 12px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.card>h2 .sp{margin-left:auto;display:flex;gap:4px}.scroll{overflow:auto;min-height:0;flex:1}
+.q{padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:center}
+.q:hover,.q.sel{background:var(--panel2)}.q.sel{box-shadow:inset 3px 0 var(--brand)}.q.res{opacity:.45}
+.pb{height:34px;border-radius:9px;display:grid;place-items:center;font-weight:900;color:#fff;background:#334155}.pb.P1{background:var(--P1)}.pb.P2{background:var(--P2)}.pb.P3{background:var(--P3);color:#201700}.pb.P4{background:var(--P4);color:#04180a}
+.q small{color:var(--muted);display:block}.q .t{font-weight:700;display:flex;gap:6px;align-items:center}
+.st{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;background:#334155;white-space:nowrap}.st.call{background:#1d4ed8}.st.await{background:var(--warn);color:#201700;animation:bl 1s infinite}.st.dispatched,.st.onscene{background:#0e7490}.st.resolved{background:#166534}
+@keyframes bl{50%{opacity:.5}}
+.u{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:4px 10px;border-bottom:1px solid var(--line);font-size:13px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ok)}.dot.enroute,.dot.dispatched{background:var(--warn)}.dot.onscene{background:var(--P1)}.dot.returning{background:#64748b}
+#map{flex:1;min-height:0;background:#0a1420 linear-gradient(rgba(120,160,210,.06) 1px,transparent 1px) 0 0/56px 56px,linear-gradient(90deg,rgba(120,160,210,.06) 1px,transparent 1px) 0 0/56px 56px;border-radius:0 0 12px 12px}
+.mapbar{display:flex;gap:6px;flex-wrap:wrap;padding:6px 10px;border-bottom:1px solid var(--line)}
+.imk{position:relative;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;border:2px solid #fff;box-shadow:0 0 0 0 currentColor}
+.imk.P1{background:var(--P1);animation:ring 1.4s infinite}.imk.P2{background:var(--P2)}.imk.P3{background:var(--P3);color:#201700}.imk.P4{background:var(--P4);color:#04180a}.imk.sel{outline:3px solid var(--brand);outline-offset:2px}.imk.res{opacity:.4}
+@keyframes ring{0%{box-shadow:0 0 0 0 #ef4444aa}100%{box-shadow:0 0 0 16px #ef444400}}
+.umk{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;color:#06101f;border:2px solid #0b1520;font-size:12px}
+.fmk{width:10px;height:10px;border-radius:2px;background:#64748b;border:1px solid #cbd5e1}
+.leaflet-container{background:#0a1420;font:inherit}.leaflet-tooltip{background:#0e1823;color:var(--text);border-color:var(--line)}
+.det{padding:10px 12px;display:grid;gap:10px}.det h3{margin:0 0 4px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.hd{display:flex;gap:10px;align-items:center}.hd .pb{width:46px;height:42px;font-size:18px}.hd b{font-size:16px}.hd small{color:var(--muted);display:block}
+.tr{max-height:150px;overflow:auto;display:grid;gap:5px}.m{padding:6px 9px;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}.m.calltaker{background:#16315a;margin-left:24px}.m small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase}.m.lowq{border-style:dashed;border-color:var(--warn)}
+mark{background:#f59e0b55;color:inherit;border-radius:3px;padding:0 2px}
+.cue{display:inline-flex;gap:5px;align-items:center;padding:3px 9px;border-radius:99px;font-weight:800;font-size:12px;background:var(--bad);color:#fff;margin:0 4px 4px 0}.cue.high{background:var(--warn);color:#201700}
+.fl{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}.f{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 8px;font-size:13px}.f span{color:var(--muted);font-size:11px;display:block}
+.sop{border:1px solid var(--brand);border-radius:10px;padding:8px 10px;background:#5b8cff14}.sop .nq b{font-size:15px}.sop ul{list-style:none;margin:6px 0 0;padding:0;font-size:13px}.sop li{color:var(--text)}.sop li.d{color:var(--muted);text-decoration:line-through}.sop li:before{content:"☐ "}.sop li.d:before{content:"☑ "}
+.instr{margin-top:6px;border:1px solid var(--warn);background:#f59e0b18;border-radius:8px;padding:6px 9px;font-size:13px}
+.dsp table{width:100%;border-collapse:collapse;font-size:13px}.dsp td,.dsp th{padding:3px 6px;border-bottom:1px solid var(--line);text-align:left}.dsp th{color:var(--muted);font-size:11px;text-transform:uppercase}
+.dsp .ag{font-weight:800;margin:6px 0 2px;display:flex;gap:8px;align-items:center}.warnbox{color:var(--warn);font-size:12px}
+.log{font:12.5px ui-monospace,Menlo,Consolas,monospace}.le{display:grid;grid-template-columns:70px 78px 100px 1fr;gap:8px;padding:2px 10px;border-bottom:1px solid #16273a}
+.le .k{font-weight:800}.k.call{color:#60a5fa}.k.sop{color:#a78bfa}.k.dispatch{color:#fbbf24}.k.unit{color:#34d399}.k.sys{color:#94a3b8}.k.cue{color:#f87171}
+.cam video{width:100%;aspect-ratio:16/9;display:block;border-radius:10px;border:1px solid var(--line);background:#000}.cam small{display:block;color:var(--muted);margin-top:4px;font-size:12px}
+.hint{color:var(--muted);font-size:12px;padding:6px 12px}
+.empty{color:var(--muted);padding:30px;text-align:center}
+@media(max-width:1180px){body{overflow:auto}.app{height:auto;grid-template-rows:none}.main{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}#mapcard{height:420px}.card{max-height:520px}#logcard{height:240px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.2 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></symbol>
+<symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16v-4l2-5h12l2 5v4M2.5 16h19"/><circle cx="7.5" cy="16.5" r="1.8"/><circle cx="16.5" cy="16.5" r="1.8"/><path d="M6 12h12"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.5"/></symbol>
+<symbol id="i-siren" viewBox="0 0 24 24"><path d="M7 18v-6a5 5 0 0 1 10 0v6M4 18h16M12 3v2M4.5 7L6 8.5M19.5 7L18 8.5M9 21h6"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8V4z"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+<symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+<symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+</defs></svg>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="mk"><svg class="i"><use href="#i-siren"/></svg></span> Abu Dhabi CCC <span class="sim">SIMULATION</span> <a href="usecases.html" style="color:var(--muted);font-weight:500;font-size:12px">use cases</a></div>
+    <div class="ctl">
+      <button id="play" class="on" aria-label="Pause or resume"><svg class="i"><use href="#i-pause"/></svg> <span>Pause</span></button>
+      <span id="speeds"></span>
+      <label><input type="checkbox" id="auto" checked> Autopilot (simulated call-taker and dispatcher)</label>
+      <label><input type="checkbox" id="rand" checked> Random incoming calls</label>
+    </div>
+    <div class="ctl">
+      <select id="scSel" aria-label="Scenario to spawn"></select>
+      <button id="spawn">+ New call</button><button id="surge" class="warn">Surge ×6</button><button id="reset"><svg class="i"><use href="#i-reset"/></svg> Reset</button>
+      <button id="full"><svg class="i"><use href="#i-expand"/></svg> Full screen</button>
+    </div>
+    <div class="clock" id="clock" title="Simulated shift clock, time-lapse 30× at 1×">00:00:00</div>
+  </header>
+  <section class="kpis" aria-label="Key figures">
+    <div class="kpi"><b id="kCalls">0</b><span>calls in progress</span></div>
+    <div class="kpi"><b id="kOpen">0</b><span>open incidents</span></div>
+    <div class="kpi"><b id="kAwait" style="color:var(--warn)">0</b><span>awaiting dispatch</span></div>
+    <div class="kpi"><b id="kUnits">0 / 0</b><span>units available / total</span></div>
+    <div class="kpi"><b id="kEn">0</b><span>en route / on scene</span></div>
+    <div class="kpi"><b id="kDsp">–</b><span>avg ETA of dispatched units</span></div>
+  </section>
+  <main class="main">
+    <div class="col">
+      <section class="card" style="flex:3"><h2>Incident queue <span class="sp"></span></h2><div class="scroll" id="queue"></div></section>
+      <section class="card" style="flex:2"><h2>Units <span class="sp" id="unitFilter"></span></h2><div class="scroll" id="units"></div></section>
+    </div>
+    <section class="card" id="mapcard"><h2>Live map · Abu Dhabi emirate <span class="sp" id="regBtns"></span></h2>
+      <div class="mapbar" id="legend"></div><div class="hint" id="mapStatus"></div><div id="map"></div></section>
+    <section class="card"><h2 id="detTitle">Selected incident</h2><div class="scroll" id="detail"><div class="empty">Select an incident in the queue or on the map.</div></div></section>
+  </main>
+  <section class="card" id="logcard"><h2>Event log <span class="sp" id="logFilter"></span></h2><div class="scroll log" id="log"></div></section>
+</div>
+
+<dialog id="mapDlg" style="background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:14px;max-width:520px;width:calc(100% - 28px);padding:18px">
+  <h3 style="margin:0 0 8px">Map settings</h3>
+  <label style="display:block;margin:8px 0 4px">Map provider</label>
+  <select id="mapProv" style="width:100%"><option value="osm">OpenStreetMap (CARTO dark): free, no key</option><option value="google">Google Maps JavaScript API: needs your API key</option></select>
+  <label style="display:block;margin:10px 0 4px" for="gKey">Google Maps API key</label>
+  <input id="gKey" type="password" autocomplete="off" placeholder="AIza…" style="width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 10px">
+  <div class="hint" style="padding:8px 0 0">There is no keyless Google map API. To use Google: in Google Cloud Console create a project, <b>enable "Maps JavaScript API"</b>, create an API key, and <b>restrict it to this site's HTTP referrer</b> and to that one API. Google asks for a billing account but includes free monthly usage; check its current pricing. A key in a web page is visible to visitors, which is why the referrer restriction matters. The key is stored only in this browser and sent only to Google. If Google fails, the page falls back to OpenStreetMap.</div>
+  <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end"><button id="mapClear">Remove key</button><button id="mapClose">Cancel</button><button id="mapSave" class="on">Save and reload</button></div>
+</dialog>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const D = /*__DATA__*/null;
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ico = (n) => `<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const rnd = (a, b) => a + Math.random() * (b - a);
+
+/* ---------- constants ---------- */
+const TYPE_ICON = { FIRE: "flame", MEDICAL: "pulse", TRAFFIC: "car", CRIME: "alert", UNKNOWN: "siren" };
+const AG2UNIT = { "Ambulance": "ambulance", "Civil Defence": "fire", "Police": "patrol", "Traffic Police": "patrol" };
+const UM = { ambulance: { pre: "AMB", color: "var(--amb)", hex: "#22c55e", icon: "pulse", label: "Ambulance", fac: "hospital" },
+  patrol: { pre: "PTL", color: "var(--ptl)", hex: "#38bdf8", icon: "car", label: "Patrol", fac: "police" },
+  fire: { pre: "FIRE", color: "var(--fire)", hex: "#fb923c", icon: "flame", label: "Fire engine", fac: "civil_defence" } };
+const K = 30;              // time-lapse: 1 real second = 30 simulated seconds at 1x (calls are condensed too)
+const CALL_STEP = 2.4;     // real seconds between call lines at 1x
+const SPEED_KMH = 60, ROAD = 1.3;
+const SCENE_SEC = { P1: 900, P2: 700, P3: 500, P4: 400 };
+
+/* ---------- haversine ---------- */
+const km = (a, b) => { const R = 6371, r = Math.PI / 180, dl = (b[0] - a[0]) * r, dn = (b[1] - a[1]) * r;
+  const h = Math.sin(dl / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
+
+/* ---------- state ---------- */
+let S;
+function freshState() {
+  const units = []; const cnt = {};
+  D.facilities.forEach((f) => { const t = Object.keys(UM).find((k) => UM[k].fac === f.kind);
+    for (let i = 0; i < 2; i++) { cnt[t] = (cnt[t] || 0) + 1; units.push({ id: `${UM[t].pre}-${String(cnt[t]).padStart(2, "0")}`, type: t, home: f, pos: [f.lat, f.lon], status: "available", target: null, inc: null }); } });
+  return { running: true, speed: 1, auto: $("#auto").checked, rand: $("#rand").checked, t: 8 * 3600 + 30 * 60, units, incs: [], log: [], sel: null, seq: 0, nextRand: 18, filter: "all", dsp: [] };
+}
+
+/* ---------- logging ---------- */
+const clockStr = (t) => { t = Math.floor(t) % 86400; return [t / 3600, (t % 3600) / 60, t % 60].map((x) => String(Math.floor(x)).padStart(2, "0")).join(":"); };
+function log(kind, text, inc) { S.log.unshift({ t: S.t, kind, text, num: inc ? inc.num : "–", inc: inc ? inc.id : null }); if (S.log.length > 400) S.log.pop(); dirty.log = true; }
+
+/* ---------- incidents ---------- */
+const dirty = { q: true, det: true, log: true, units: true, kpi: true };
+function spawn(scId, jitter = true) {
+  const sc = D.scenarios[scId]; if (!sc || !sc.pin) return;
+  const j = jitter ? [rnd(-0.012, 0.012), rnd(-0.012, 0.012)] : [0, 0];
+  const inc = { id: ++S.seq, num: `SIM-${String(S.seq).padStart(4, "0")}`, sc: scId, title: sc.title, frames: sc.frames, idx: 0, clk: 0, lat: sc.pin.lat + j[0], lon: sc.pin.lon + j[1],
+    state: "call", created: S.t, assigned: [], needs: {}, sceneT: 0, firstDsp: null, seenCues: new Set(), seenNQ: "", seenPrio: "", seenInstr: new Set(), seenRegion: false, dspAt: null, callEnded: false };
+  S.incs.push(inc); log("call", `Incoming call: ${sc.title}`, inc);
+  if (!S.sel) S.sel = inc.id; dirty.q = dirty.det = dirty.kpi = true; mapSync(); return inc;
+}
+const cur = (inc) => (inc.idx ? inc.frames[inc.idx - 1] : null);
+const prio = (inc) => { const f = cur(inc); return f && f.fields.priority ? f.priority.level : null; };
+function applyFrame(inc) {
+  const f = cur(inc); if (!f) return;
+  if (f.speaker === "caller") log("call", `Caller: ${f.text.slice(0, 70)}${f.text.length > 70 ? "…" : ""}`, inc); else log("call", `Call-taker: ${f.text.slice(0, 70)}`, inc);
+  f.cues.forEach((c) => { if (!inc.seenCues.has(c.id)) { inc.seenCues.add(c.id); log("cue", `ALERT: ${c.label} (“${c.evidence}”)`, inc); } });
+  const p = prio(inc); if (p && p !== inc.seenPrio) { inc.seenPrio = p; log("sop", `AI priority suggested: ${p} (${f.priority.score})`, inc); }
+  if (f.case && f.case.region && !inc.seenRegion) { inc.seenRegion = true; log("call", `Location matched: ${f.fields.location ? f.fields.location.value : "?"} · ${f.case.region}`, inc); }
+  const nq = f.next ? f.next.en : ""; if (nq && nq !== inc.seenNQ) { inc.seenNQ = nq; log("sop", `SOP next question: ${nq}`, inc); }
+  (f.instr || []).forEach((i) => { if (!inc.seenInstr.has(i.cue)) { inc.seenInstr.add(i.cue); log("sop", `SOP instruction shown: ${i.cue.replace("_", " ")}`, inc); } });
+  if (f.case && f.case.agencies.length) f.case.agencies.forEach((a) => (inc.needs[a.name] = true));
+  dirty.q = dirty.det = true;
+}
+function needsList(inc) {
+  const p = prio(inc), out = [];
+  Object.keys(inc.needs).forEach((ag) => { const type = AG2UNIT[ag]; if (!type) return; const n = (ag === "Civil Defence" && p === "P1") ? 2 : 1;
+    const have = inc.assigned.filter((u) => u.type === type && u.agency === ag).length; out.push({ ag, type, need: n, have }); });
+  return out;
+}
+function recommend(inc, type, n = 3) {
+  return S.units.filter((u) => u.type === type && u.status === "available").map((u) => { const d = km(u.pos, [inc.lat, inc.lon]); return { u, d, eta: (d * ROAD / SPEED_KMH) * 3600 }; })
+    .sort((a, b) => a.d - b.d).slice(0, n);
+}
+function dispatch(inc, unit, ag, by) {
+  const eta = (km(unit.pos, [inc.lat, inc.lon]) * ROAD / SPEED_KMH) * 3600;
+  if (unit.status !== "available") return;
+  unit.status = "enroute"; unit.target = [inc.lat, inc.lon]; unit.inc = inc.id; inc.assigned.push({ id: unit.id, type: unit.type, agency: ag });
+  if (inc.firstDsp === null) { inc.firstDsp = S.t; S.dsp.push(eta || 0); }
+  if (inc.state === "call" || inc.state === "await") inc.state = "dispatched"; else if (inc.state !== "onscene") inc.state = "dispatched";
+  log("dispatch", `${unit.id} dispatched (${by}) to ${inc.num}`, inc); dirty.q = dirty.det = dirty.units = dirty.kpi = true;
+}
+function autoDispatch(inc) {
+  needsList(inc).forEach((n) => { for (let i = n.have; i < n.need; i++) { const r = recommend(inc, n.type, 1)[0]; if (!r) { if (!inc.warned) { inc.warned = true; log("dispatch", `No ${UM[n.type].label.toLowerCase()} available for ${n.ag}: queued`, inc); } return; } dispatch(inc, r.u, n.ag, "autopilot"); } });
+}
+
+/* ---------- simulation tick ---------- */
+function tick(dtReal) {
+  if (!S.running) return;
+  const sp = S.speed, dOps = dtReal * K * sp; S.t += dOps;
+  // call replay
+  S.incs.forEach((inc) => {
+    if (inc.state === "call" || (!inc.callEnded && inc.idx < inc.frames.length)) {
+      inc.clk += dtReal * sp;
+      while (inc.idx < inc.frames.length && inc.clk >= (inc.idx + 1) * CALL_STEP) { inc.idx++; applyFrame(inc); }
+      if (inc.idx >= inc.frames.length && !inc.callEnded) { inc.callEnded = true; log("call", "Call ended", inc); if (inc.state === "call") inc.state = "await"; dirty.q = dirty.det = true; }
+    }
+    if ((inc.state === "await" || inc.state === "call" || inc.state === "dispatched" || inc.state === "onscene") && needsList(inc).some((n) => n.have < n.need)) {
+      inc.dspAt = inc.dspAt ?? S.t; if (S.auto && inc.idx >= 2 && S.t - inc.dspAt > 40) autoDispatch(inc);
+    }
+  });
+  // units
+  S.units.forEach((u) => {
+    if (u.status === "enroute" || u.status === "returning") {
+      const tgt = u.status === "enroute" ? u.target : [u.home.lat, u.home.lon], d = km(u.pos, tgt), step = SPEED_KMH / ROAD * dOps / 3600;
+      if (step >= d) { u.pos = tgt.slice();
+        if (u.status === "enroute") { u.status = "onscene"; const inc = S.incs.find((i) => i.id === u.inc); log("unit", `${u.id} arrived on scene`, inc); if (inc && inc.state !== "resolved") inc.state = "onscene"; dirty.q = dirty.det = true; }
+        else { u.status = "available"; u.inc = null; u.target = null; log("unit", `${u.id} available at ${u.home.name}`); }
+        dirty.units = dirty.kpi = true; }
+      else { const fr = step / d; u.pos = [u.pos[0] + (tgt[0] - u.pos[0]) * fr, u.pos[1] + (tgt[1] - u.pos[1]) * fr]; }
+    }
+  });
+  // scene time and resolution
+  S.incs.forEach((inc) => { if (inc.state === "onscene") { inc.sceneT += dOps;
+    if (inc.sceneT >= (SCENE_SEC[prio(inc)] || 600) && inc.callEnded) { inc.state = "resolved"; inc.resolvedAt = S.t;
+      S.units.filter((u) => u.inc === inc.id).forEach((u) => { u.status = "returning"; log("unit", `${u.id} released, returning to ${u.home.name}`, inc); });
+      log("sys", "Incident resolved and closed", inc); dirty.q = dirty.det = dirty.units = dirty.kpi = true; } } });
+  // random calls
+  if (S.rand) { S.nextRand -= dtReal * sp; if (S.nextRand <= 0 && S.incs.filter((i) => i.state !== "resolved").length < 9) { spawn(Object.keys(D.scenarios)[Math.floor(Math.random() * Object.keys(D.scenarios).length)]); S.nextRand = rnd(20, 38); } }
+  S.units.forEach(unitMarker);
+}
+
+/* ---------- map: adapter over Leaflet/OSM (default, free, no key) or the Google Maps JavaScript API (operator supplies a key) ---------- */
+let MAP = null, incMk = {}, unitMk = {}, routeLn = {}, MAP_NAME = "", MAP_NOTE = "";
+// Default Google Maps JavaScript API key for this deployment. A web-page key is visible to every visitor, so it MUST be restricted in the
+// Google Cloud Console to this site's HTTP referrers and to the Maps JavaScript API only. A visitor's own key (Map settings) overrides it.
+const DEFAULT_GMAPS_KEY = /*__GMAPS_KEY__*/"";
+const MAPCFG = (() => { const q = new URLSearchParams(location.search), get = (k) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } };
+  const own = (q.get("gmapsKey") || get("ccc_gkey")).trim(), key = own || DEFAULT_GMAPS_KEY;
+  return { key, own, prov: q.get("map") || get("ccc_map") || (key ? "google" : "osm") }; })();
+const CENTER = [24.46, 54.40], ALL_SW = [22.9, 51.8], ALL_NE = [25.0, 56.0];
+
+class LeafletMap {
+  constructor(el) { this.m = L.map(el, { zoomControl: true }).setView(CENTER, 10);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", { maxZoom: 19, subdomains: "abcd", attribution: "© OpenStreetMap contributors © CARTO" }).addTo(this.m); }
+  view(lat, lon, z) { this.m.setView([lat, lon], z); } pan(lat, lon) { this.m.panTo([lat, lon]); } fit(sw, ne) { this.m.fitBounds([sw, ne]); } resize() { this.m.invalidateSize(); }
+  label(lat, lon, text) { L.circleMarker([lat, lon], { radius: 1, opacity: 0, fillOpacity: 0, interactive: false }).bindTooltip(text, { permanent: true, direction: "top", opacity: .8 }).addTo(this.m); }
+  marker(lat, lon, html, size, o = {}) {
+    const icon = (h) => L.divIcon({ className: "", html: h, iconSize: size }), mk = L.marker([lat, lon], { icon: icon(html), zIndexOffset: o.z || 0 }).addTo(this.m), m = this.m;
+    if (o.tip) mk.bindTooltip(o.tip); if (o.click) mk.on("click", o.click);
+    return { pos: (a, b) => mk.setLatLng([a, b]), html: (h) => mk.setIcon(icon(h)), tip: (t) => { mk.unbindTooltip(); mk.bindTooltip(t); },
+      show: (v) => { const e = mk.getElement(); if (e) e.style.display = v ? "" : "none"; }, remove: () => m.removeLayer(mk) }; }
+  line(color) { let ln = null; const m = this.m;
+    return { set: (a, b) => { if (!ln) ln = L.polyline([a, b], { color, weight: 2, dashArray: "5 6", opacity: .8 }).addTo(m); else ln.setLatLngs([a, b]); }, remove: () => { if (ln) { m.removeLayer(ln); ln = null; } } }; }
+}
+class GoogleMapAdapter {
+  constructor(el) { this.m = new google.maps.Map(el, { center: { lat: CENTER[0], lng: CENTER[1] }, zoom: 10, mapId: "DEMO_MAP_ID", colorScheme: google.maps.ColorScheme.DARK, gestureHandling: "greedy" }); }
+  view(lat, lon, z) { this.m.setCenter({ lat, lng: lon }); this.m.setZoom(z); } pan(lat, lon) { this.m.panTo({ lat, lng: lon }); }
+  fit(sw, ne) { this.m.fitBounds({ south: sw[0], west: sw[1], north: ne[0], east: ne[1] }); } resize() { google.maps.event.trigger(this.m, "resize"); }
+  _el(html) { const d = document.createElement("div"); d.style.transform = "translateY(50%)"; d.innerHTML = html; return d; }  // AdvancedMarker anchors bottom-centre; our icons are centre-anchored
+  label(lat, lon, text) { const el = document.createElement("div"); el.textContent = text; el.style.cssText = "color:#cbd5e1;font:700 12px system-ui;text-shadow:0 1px 3px #000;pointer-events:none"; new google.maps.marker.AdvancedMarkerElement({ map: this.m, position: { lat, lng: lon }, content: el }); }
+  marker(lat, lon, html, size, o = {}) {
+    const el = this._el(html), mk = new google.maps.marker.AdvancedMarkerElement({ map: this.m, position: { lat, lng: lon }, content: el, zIndex: o.z || 0, title: o.tip || "" }), m = this.m;
+    if (o.click) mk.addListener("click", o.click);
+    return { pos: (a, b) => { mk.position = { lat: a, lng: b }; }, html: (h) => { el.innerHTML = h; }, tip: (t) => { mk.title = t; }, show: (v) => { mk.map = v ? m : null; }, remove: () => { mk.map = null; } }; }
+  line(color) { let ln = null; const m = this.m;
+    return { set: (a, b) => { const path = [{ lat: a[0], lng: a[1] }, { lat: b[0], lng: b[1] }]; if (!ln) ln = new google.maps.Polyline({ map: m, path, strokeColor: color, strokeOpacity: .8, strokeWeight: 2 }); else ln.setPath(path); }, remove: () => { if (ln) { ln.setMap(null); ln = null; } } }; }
+}
+function loadGoogle(key) {
+  return new Promise((res, rej) => { let done = false; const fail = (m) => { if (!done) { done = true; rej(new Error(m)); } else { MAP_NOTE = m; renderMapStatus(); } };
+    window.__gmReady = () => { done = true; res(); }; window.gm_authFailure = () => fail("Google rejected the API key (check the key, enabled API, referrer restriction and billing)");
+    const s = document.createElement("script"); s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly&loading=async&libraries=marker&callback=__gmReady`;
+    s.async = true; s.onerror = () => fail("could not load Google Maps (offline or blocked)"); document.head.appendChild(s); setTimeout(() => fail("Google Maps timed out"), 10000); });
+}
+async function mapInit() {
+  const box = $("#map");
+  if (MAPCFG.prov === "google" && MAPCFG.key) {
+    try { await loadGoogle(MAPCFG.key); MAP = new GoogleMapAdapter(box); MAP_NAME = "Google Maps"; }
+    catch (e) { MAP_NOTE = `${e.message}. Showing OpenStreetMap instead.`; }
+  } else if (MAPCFG.prov === "google") MAP_NOTE = "Google Maps needs an API key (Map settings). Showing OpenStreetMap instead.";
+  if (!MAP && window.L) { MAP = new LeafletMap(box); MAP_NAME = "OpenStreetMap (CARTO dark)"; }
+  renderMapStatus();
+  if (!MAP) { box.innerHTML = '<div class="empty">The live map needs an internet connection. The simulation, queue, SOP and dispatch still run.</div>'; return; }
+  D.regions.forEach((r) => MAP.label(r.lat, r.lon, r.name));
+  D.facilities.forEach((f) => MAP.marker(f.lat, f.lon, '<div class="fmk"></div>', [10, 10], { tip: f.name }));
+  $("#regBtns").innerHTML = D.regions.map((r, i) => `<button data-r="${i}">${esc(r.name.replace(" Region", ""))}</button>`).join("") + '<button id="fitAll">Fit all</button>';
+  document.querySelectorAll("#regBtns [data-r]").forEach((b) => (b.onclick = () => MAP.view(D.regions[+b.dataset.r].lat, D.regions[+b.dataset.r].lon, +b.dataset.r === 2 ? 8 : 11)));
+  $("#fitAll").onclick = () => MAP.fit(ALL_SW, ALL_NE);
+  if (S) { mapSync(); S.units.forEach(unitMarker); }
+}
+function renderMapStatus() { const e = $("#mapStatus"); if (e) e.innerHTML = `${esc(MAP_NAME || "no map")}${MAP_NOTE ? ` · <span style="color:var(--warn)">${esc(MAP_NOTE)}</span>` : ""} · <a href="#" id="mapCfgOpen" style="color:var(--brand)">Map settings</a>`;
+  const o = $("#mapCfgOpen"); if (o) o.onclick = (ev) => { ev.preventDefault(); openMapCfg(); }; }
+function openMapCfg() {
+  const d = $("#mapDlg"); $("#gKey").value = MAPCFG.own; $("#gKey").placeholder = DEFAULT_GMAPS_KEY ? "(leave empty to use this site's built-in key)" : "AIza…"; $("#mapProv").value = MAPCFG.prov; d.showModal();
+  $("#mapSave").onclick = () => { try { localStorage.setItem("ccc_map", $("#mapProv").value); localStorage.setItem("ccc_gkey", $("#gKey").value.trim()); } catch {} const u = new URL(location.href); u.search = ""; location.href = u.toString(); };
+  $("#mapClear").onclick = () => { try { localStorage.removeItem("ccc_gkey"); localStorage.setItem("ccc_map", "osm"); } catch {} const u = new URL(location.href); u.search = ""; location.href = u.toString(); };
+  $("#mapClose").onclick = () => d.close();
+}
+const incHtml = (inc) => { const p = prio(inc) || "P4", t = (cur(inc) && cur(inc).type) || "UNKNOWN"; return `<div class="imk ${p} ${inc.id === S.sel ? "sel" : ""} ${inc.state === "resolved" ? "res" : ""}">${ico(TYPE_ICON[t] || "siren")}</div>`; };
+function mapSync() {
+  if (!MAP) return;
+  S.incs.forEach((inc) => { const tip = `${inc.num}: ${prio(inc) || "…"} ${inc.state}`;
+    if (!incMk[inc.id]) incMk[inc.id] = MAP.marker(inc.lat, inc.lon, incHtml(inc), [26, 26], { z: 500, tip, click: () => select(inc.id) }); else { incMk[inc.id].html(incHtml(inc)); incMk[inc.id].tip(tip); } });
+  Object.keys(incMk).forEach((id) => { if (!S.incs.find((i) => i.id === +id)) { incMk[id].remove(); delete incMk[id]; } });
+}
+function unitMarker(u) {
+  if (!MAP) return; const m = UM[u.type];
+  if (!unitMk[u.id]) unitMk[u.id] = MAP.marker(u.pos[0], u.pos[1], `<div class="umk" style="background:${m.hex}">${ico(m.icon)}</div>`, [24, 24], { z: 300, tip: u.id });
+  if (!u._lp || u._lp[0] !== u.pos[0] || u._lp[1] !== u.pos[1]) { unitMk[u.id].pos(u.pos[0], u.pos[1]); u._lp = u.pos.slice(); }
+  if (u.status === "enroute" || u.status === "returning") { const tgt = u.status === "enroute" ? u.target : [u.home.lat, u.home.lon]; (routeLn[u.id] = routeLn[u.id] || MAP.line(m.hex)).set(u.pos, tgt); }
+  else if (routeLn[u.id]) { routeLn[u.id].remove(); delete routeLn[u.id]; }
+  unitMk[u.id].show(!(u.status === "available" && !S.showIdle));
+}
+
+/* ---------- selection ---------- */
+function select(id) { S.sel = id; dirty.q = dirty.det = true; mapSync(); const i = S.incs.find((x) => x.id === id); if (MAP && i) MAP.pan(i.lat, i.lon); }
+
+/* ---------- rendering ---------- */
+const stLabel = { call: "CALL IN PROGRESS", await: "AWAITING DISPATCH", dispatched: "UNITS EN ROUTE", onscene: "ON SCENE", resolved: "CLOSED" };
+const stClass = (i) => (i.state === "await" ? "await" : i.state);
+function renderQueue() {
+  const order = { P1: 0, P2: 1, P3: 2, P4: 3 }, list = [...S.incs].sort((a, b) => (a.state === "resolved") - (b.state === "resolved") || (order[prio(a)] ?? 9) - (order[prio(b)] ?? 9) || b.created - a.created);
+  $("#queue").innerHTML = list.length ? list.map((i) => { const f = cur(i), p = prio(i), t = (f && f.type) || "UNKNOWN", loc = f && f.fields.location ? f.fields.location.value : "locating…";
+    const unmet = needsList(i).some((n) => n.have < n.need);
+    return `<div class="q ${i.id === S.sel ? "sel" : ""} ${i.state === "resolved" ? "res" : ""}" data-id="${i.id}" tabindex="0" role="button" aria-label="Incident ${i.num}"><div class="pb ${p || ""}">${p || "…"}</div>
+      <div><span class="t">${ico(TYPE_ICON[t] || "siren")} ${esc(f && f.fields.incident_type ? f.fields.incident_type.value : "Incoming call")}</span><small>${esc(i.num)} · ${esc(loc)}</small><small>${esc(f && f.case && f.case.region ? f.case.region : "")} · ${f ? f.cues.length : 0} alerts · ${Math.floor((S.t - i.created) / 60)} min</small>
+      <span class="st ${stClass(i)}" style="display:inline-block;margin-top:3px">${i.state === "dispatched" && unmet ? "PARTLY DISPATCHED" : stLabel[i.state]}</span></div></div>`; }).join("") : '<div class="empty">No incidents. Press “+ New call”.</div>';
+  document.querySelectorAll("#queue .q").forEach((e) => { e.onclick = () => select(+e.dataset.id); e.onkeydown = (ev) => { if (ev.key === "Enter") select(+e.dataset.id); }; });
+}
+function renderUnits() {
+  $("#unitFilter").innerHTML = `<button id="idle" class="${S.showIdle ? "on" : ""}">${S.showIdle ? "Hide" : "Show"} idle on map</button>`;
+  $("#idle").onclick = () => { S.showIdle = !S.showIdle; S.units.forEach(unitMarker); dirty.units = true; };
+  const ord = { onscene: 0, enroute: 1, dispatched: 1, returning: 2, available: 3 };
+  $("#units").innerHTML = [...S.units].sort((a, b) => ord[a.status] - ord[b.status]).map((u) => { const m = UM[u.type], inc = S.incs.find((i) => i.id === u.inc);
+    return `<div class="u"><span class="dot ${u.status}"></span><span style="color:${m.hex}">${ico(m.icon)} <b>${u.id}</b> <small style="color:var(--muted)">${esc(u.home.name.replace(/ (Police Station|Civil Defence Centre|Hospital)/, ""))}</small></span><small>${u.status}${inc ? " · " + inc.num : ""}</small></div>`; }).join("");
+}
+function renderKpi() {
+  const live = S.incs.filter((i) => i.state !== "resolved"), av = S.units.filter((u) => u.status === "available").length;
+  $("#kCalls").textContent = S.incs.filter((i) => i.state === "call").length; $("#kOpen").textContent = live.length;
+  $("#kAwait").textContent = live.filter((i) => needsList(i).some((n) => n.have < n.need) && i.idx >= 2).length; $("#kUnits").textContent = `${av} / ${S.units.length}`;
+  $("#kEn").textContent = `${S.units.filter((u) => u.status === "enroute").length} / ${S.units.filter((u) => u.status === "onscene").length}`;
+  $("#kDsp").textContent = S.dsp.length ? Math.round(S.dsp.reduce((a, b) => a + b, 0) / S.dsp.length / 60 * 10) / 10 + " min" : "–";
+}
+function hl(text, ev) { const r = []; ev.filter(Boolean).forEach((e) => { const i = text.indexOf(e); if (i >= 0) r.push([i, i + e.length]); }); r.sort((a, b) => a[0] - b[0]); let o = "", p = 0; r.forEach(([s, e]) => { if (s >= p) { o += esc(text.slice(p, s)) + "<mark>" + esc(text.slice(s, e)) + "</mark>"; p = e; } }); return o + esc(text.slice(p)); }
+const CAMCLIP = { TRAFFIC: "collision", FIRE: "fire", CRIME: "crime", MEDICAL: "medical" };
+const CAMINFO = { collision: "CAM-014 · Sheikh Zayed bin Sultan St", fire: "CAM-027 · Mussafah Industrial", crime: "CAM-008 · Al Khalidiyah", medical: "CAM-003 · Hamdan St" };
+const camBox = document.createElement("div"); camBox.className = "cam"; camBox.innerHTML = '<h3>Nearest camera <span style="text-transform:none;letter-spacing:0">(simulated clip)</span></h3><video muted loop playsinline autoplay preload="metadata"></video><small></small>';
+function placeCam(f) {   // one persistent <video> so the clip keeps playing while the panel re-renders
+  const slot = $("#camSlot"); if (!slot) return; const clip = f && f.type && CAMCLIP[f.type];
+  if (!clip) { slot.innerHTML = '<div class="hint">Camera view appears once the incident type is known.</div>'; return; }
+  const v = camBox.querySelector("video"), src = `video/cctv_${clip}.mp4`; if (v.getAttribute("src") !== src) { v.setAttribute("src", src); v.poster = `video/cctv_${clip}.jpg`; }
+  camBox.querySelector("small").textContent = `${CAMINFO[clip]} · simulated; camera fusion is a Phase 2 feature`; slot.textContent = ""; slot.appendChild(camBox); v.play().catch(() => {});
+}
+function renderDetail() {
+  const inc = S.incs.find((i) => i.id === S.sel); if (!inc) { $("#detail").innerHTML = '<div class="empty">Select an incident in the queue or on the map.</div>'; $("#detTitle").textContent = "Selected incident"; return; }
+  const f = cur(inc), p = prio(inc), shown = inc.frames.slice(0, inc.idx), ev = f ? f.cues.map((c) => c.evidence) : [];
+  $("#detTitle").textContent = `Incident ${inc.num}`;
+  let h = `<div class="det"><div class="hd"><div class="pb ${p || ""}">${p || "…"}</div><div><b>${esc(f && f.fields.incident_type ? f.fields.incident_type.value : "Incoming call")}</b><small>${esc(inc.title)} · ${esc(f ? f.lang : "")}</small></div><span class="st ${stClass(inc)}" style="margin-left:auto">${stLabel[inc.state]}</span><button id="expBtn" title="Download this incident as JSON" aria-label="Export incident as JSON">Export</button></div>`;
+  h += `<div><h3>Live call (simulated replay)</h3><div class="tr" id="trbox">${shown.map((m) => `<div class="m ${m.speaker} ${m.lowq ? "lowq" : ""}" dir="auto"><small>${m.speaker}${m.lowq ? " · low audio quality" : ""}</small>${hl(m.text, m.speaker === "calltaker" ? [] : ev)}</div>`).join("") || '<div class="hint">Ringing…</div>'}</div></div>`;
+  h += '<div id="camSlot"></div>';
+  if (f) { h += `<div><h3>AI alerts</h3>${f.cues.map((c) => `<span class="cue ${c.level}">${ico("alert")} ${esc(c.label)}</span>`).join("") || '<span class="hint">None yet</span>'}</div>`;
+    h += `<div class="fl">${["incident_type", "priority", "location", "region", "persons", "ages", "injuries", "hazards"].filter((k) => f.fields[k]).map((k) => `<div class="f"><span>${esc(f.fields[k].label)} · ${Math.round(f.fields[k].conf * 100)}%</span><b dir="auto">${esc(f.fields[k].value)}</b></div>`).join("")}</div>`;
+    h += `<div class="sop"><h3 style="color:var(--brand)">Real-time SOP</h3>${f.next ? `<div class="nq"><b dir="auto">${esc(f.next.en)}</b><div dir="rtl" style="color:var(--muted)">${esc(f.next.ar)}</div></div>` : '<div class="nq"><b>All protocol questions answered.</b></div>'}
+      <ul>${f.checklist.map((c) => `<li class="${c.done ? "d" : ""}">${esc(c.q)}</li>`).join("")}</ul>
+      ${(f.instr || []).map((i) => `<div class="instr"><b>${esc(i.cue.replace("_", " "))}</b>: ${esc(i.en)}<div dir="rtl">${esc(i.ar)}</div><small style="color:var(--muted)">Sample text: replace with approved protocol</small></div>`).join("")}</div>`; }
+  h += `<div class="dsp"><h3>Dispatch (simulated)</h3>`;
+  const needs = needsList(inc);
+  if (!needs.length) h += '<div class="hint">Waiting for the call to establish location and agencies…</div>';
+  needs.forEach((n) => { const assigned = inc.assigned.filter((a) => a.type === n.type && a.agency === n.ag), rec = recommend(inc, n.type, 3);
+    h += `<div class="ag"><span style="color:${UM[n.type].hex}">${ico(UM[n.type].icon)}</span> ${esc(n.ag)} <small style="color:var(--muted);font-weight:400">needs ${n.need}, assigned ${n.have}</small></div>`;
+    if (assigned.length) h += `<div class="hint">Assigned: ${assigned.map((a) => `${a.id} (${S.units.find((u) => u.id === a.id).status})`).join(", ")}</div>`;
+    if (n.have < n.need && inc.state !== "resolved") { h += rec.length ? `<table><tr><th>Unit</th><th>Base</th><th>Distance</th><th>Est. ETA</th><th></th></tr>${rec.map((r, i) => `<tr><td>${r.u.id}${i === 0 ? " ★" : ""}</td><td>${esc(r.u.home.name.split(" ").slice(0, 2).join(" "))}</td><td>${r.d.toFixed(1)} km</td><td>${Math.max(1, Math.round(r.eta / 60))} min${r.eta > 1200 ? " ⚠" : ""}</td><td><button data-d="${r.u.id}" data-a="${esc(n.ag)}">Dispatch</button></td></tr>`).join("")}</table>`
+      : '<div class="warnbox">No unit of this type is available. The request stays queued until one is released.</div>'; } });
+  h += `<div class="hint">★ recommended = nearest available (straight-line ×1.3 at ${SPEED_KMH} km/h). Autopilot approves recommendations; with autopilot off a dispatcher must click Dispatch.</div></div>`;
+  h += `<div><h3>Incident timeline</h3><div class="log" style="max-height:130px;overflow:auto">${S.log.filter((l) => l.inc === inc.id).map((l) => `<div class="le" style="grid-template-columns:62px 1fr"><span>${clockStr(l.t)}</span><span class="k ${l.kind}" style="font-weight:400;color:var(--text)">${esc(l.text)}</span></div>`).join("")}</div></div></div>`;
+  const keep = $("#detail").scrollTop; $("#detail").innerHTML = h; placeCam(f); $("#detail").scrollTop = keep; const tb = $("#trbox"); if (tb) tb.scrollTop = 1e6;
+  $("#expBtn").onclick = () => { const f = cur(inc), rec = { case_number: inc.num, scenario: inc.sc, simulated: true, priority: prio(inc), state: inc.state, location: { lat: inc.lat, lon: inc.lon },
+      fields: f ? Object.fromEntries(Object.entries(f.fields).map(([k, v]) => [k, v.value])) : {}, alerts: f ? f.cues.map((c) => c.label) : [], assigned_units: inc.assigned, transcript: inc.frames.slice(0, inc.idx).map((m) => ({ speaker: m.speaker, text: m.text })),
+      timeline: S.log.filter((l) => l.inc === inc.id).reverse().map((l) => ({ clock: clockStr(l.t), kind: l.kind, text: l.text })) };
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(rec, null, 2)], { type: "application/json" })); a.download = inc.num + ".json"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+  document.querySelectorAll("#detail [data-d]").forEach((b) => (b.onclick = () => { const u = S.units.find((x) => x.id === b.dataset.d); dispatch(inc, u, b.dataset.a, "dispatcher"); }));
+}
+function renderLog() {
+  const kinds = ["all", "call", "cue", "sop", "dispatch", "unit"]; $("#logFilter").innerHTML = kinds.map((k) => `<button data-k="${k}" class="${S.filter === k ? "on" : ""}">${k}</button>`).join("");
+  document.querySelectorAll("#logFilter button").forEach((b) => (b.onclick = () => { S.filter = b.dataset.k; dirty.log = true; }));
+  $("#log").innerHTML = S.log.filter((l) => S.filter === "all" || l.kind === S.filter).slice(0, 120).map((l) => `<div class="le"><span>${clockStr(l.t)}</span><span>${esc(l.num)}</span><span class="k ${l.kind}">${l.kind.toUpperCase()}</span><span>${esc(l.text)}</span></div>`).join("");
+}
+function render() {
+  $("#clock").textContent = clockStr(S.t);
+  if (dirty.q) { renderQueue(); mapSync(); dirty.q = false; } if (dirty.units) { renderUnits(); dirty.units = false; }
+  if (dirty.kpi) { renderKpi(); dirty.kpi = false; } if (dirty.log) { renderLog(); dirty.log = false; } if (dirty.det) { renderDetail(); dirty.det = false; }
+}
+
+/* ---------- controls ---------- */
+function bindControls() {
+  $("#scSel").innerHTML = Object.values(D.scenarios).map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join("");
+  $("#speeds").innerHTML = [1, 2, 4].map((x) => `<button data-s="${x}" class="${x === 1 ? "on" : ""}">${x}×</button>`).join("");
+  document.querySelectorAll("#speeds button").forEach((b) => (b.onclick = () => { S.speed = +b.dataset.s; document.querySelectorAll("#speeds button").forEach((x) => x.classList.toggle("on", x === b)); }));
+  $("#play").onclick = () => { S.running = !S.running; $("#play span").textContent = S.running ? "Pause" : "Resume"; $("#play use").setAttribute("href", S.running ? "#i-pause" : "#i-play"); $("#play").classList.toggle("on", S.running); };
+  $("#auto").onchange = (e) => (S.auto = e.target.checked); $("#rand").onchange = (e) => (S.rand = e.target.checked);
+  $("#spawn").onclick = () => { const i = spawn($("#scSel").value); if (i) select(i.id); };
+  $("#surge").onclick = () => { log("sys", "SURGE: six simultaneous calls injected (major-incident simulation)"); const ids = Object.keys(D.scenarios); for (let k = 0; k < 6; k++) spawn(ids[k % ids.length]); };
+  $("#reset").onclick = () => start();
+  $("#full").onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen && document.documentElement.requestFullscreen());
+}
+function start() {
+  S = freshState(); [incMk, unitMk, routeLn].forEach((g) => Object.values(g).forEach((h) => h.remove())); incMk = {}; unitMk = {}; routeLn = {};
+  S.incs = []; log("sys", "Shift started. Simulation: scripted calls replayed from the real extraction pipeline; dispatch and unit movement are simulated.");
+  Object.keys(dirty).forEach((k) => (dirty[k] = true));
+  const ids = Object.keys(D.scenarios); spawn(ids.includes("en_cardiac") ? "en_cardiac" : ids[0], false); setTimeout(() => S && spawn(ids.includes("ar_gulf_fire") ? "ar_gulf_fire" : ids[1]), 6000);
+  $("#legend").innerHTML = Object.values(UM).map((m) => `<span style="color:${m.hex}">${ico(m.icon)} ${m.label}</span>`).join(" · ") + ' · <span style="color:#94a3b8">■ facility</span> · <span style="color:var(--P1)">● incident (colour = AI priority)</span>';
+  S.units.forEach(unitMarker);
+}
+bindControls(); start(); mapInit();
+setTimeout(() => MAP && MAP.resize(), 600); addEventListener("resize", () => MAP && MAP.resize()); document.addEventListener("fullscreenchange", () => setTimeout(() => MAP && MAP.resize(), 200));
+let last = performance.now(); let acc = 0;
+setInterval(() => { const n = performance.now(), dt = Math.min(0.5, (n - last) / 1000); last = n; tick(dt); acc += dt; if (acc > 0.25) { acc = 0; render(); } }, 100);
+window.__ccc = { get S() { return S; }, spawn, select, tick: (s) => { for (let i = 0; i < s * 10; i++) tick(0.1); render(); } };
+</script>
+<!--__HELP__-->
+</body>
+</html>

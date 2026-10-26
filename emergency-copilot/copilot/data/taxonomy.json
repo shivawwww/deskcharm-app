@@ -1,0 +1,8 @@
+{
+  "_note": "SAMPLE taxonomy. Replace with the client's incident taxonomy and agency mapping.",
+  "FIRE":    {"code": "FIRE-01",  "label": "Fire",                "agencies": ["Civil Defence"],                "base": 45},
+  "MEDICAL": {"code": "MED-01",   "label": "Medical emergency",   "agencies": ["Ambulance"],                    "base": 40},
+  "TRAFFIC": {"code": "TRF-01",   "label": "Road traffic collision", "agencies": ["Traffic Police", "Ambulance"], "base": 40},
+  "CRIME":   {"code": "CRIM-01",  "label": "Crime in progress",   "agencies": ["Police"],                       "base": 40},
+  "UNKNOWN": {"code": "UNK-00",   "label": "Unclassified",        "agencies": [],                               "base": 20}
+}
